@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fusion Media — Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   CSS RESET & VARIABLES
+   ═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0e17;
+  --bg-card: rgba(15, 20, 35, 0.85);
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.15);
+  --purple: #7C3AED;
+  --purple-glow: rgba(124, 58, 237, 0.4);
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.3);
+  --gold: #f59e0b;
+  --gold-glow: rgba(245, 158, 11, 0.3);
+  --green: #22c55e;
+  --green-glow: rgba(34, 197, 94, 0.3);
+  --red: #ef4444;
+  --pink: #ec4899;
+  --orange: #f97316;
+  --text: #e2e8f0;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+/* ═══════════════════════════════════════════════════
+   ANIMATED BACKGROUND
+   ═══════════════════════════════════════════════════ */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.bg-glow {
+  position: fixed; z-index: 0; pointer-events: none;
+  width: 600px; height: 600px; border-radius: 50%;
+  filter: blur(120px); opacity: 0.15;
+}
+.bg-glow-1 { top: -200px; left: -100px; background: var(--purple); }
+.bg-glow-2 { bottom: -200px; right: -100px; background: var(--cyan); }
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL HEADER
+   ═══════════════════════════════════════════════════ */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(10, 14, 23, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 900; color: #fff;
+  box-shadow: 0 0 20px var(--purple-glow);
+}
+.logo-text { line-height: 1.1; }
+.logo-text .brand { font-size: 16px; font-weight: 800; letter-spacing: 2px; color: #fff; }
+.logo-text .sub { font-size: 10px; font-weight: 500; letter-spacing: 4px; color: var(--cyan); text-transform: uppercase; }
+
+.header-center { display: flex; align-items: center; gap: 24px; }
+.stat-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-size: 12px; font-weight: 500;
+}
+.stat-pill .num { color: var(--cyan); font-weight: 700; }
+.stat-pill .label { color: var(--text-muted); }
+
+.header-right { display: flex; align-items: center; gap: 16px; }
+.live-clock { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.live-clock .tz { color: var(--text-muted); font-size: 11px; margin-left: 4px; }
+.btn-new-agent {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--purple); color: #fff;
+  border: none; cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 600;
+  box-shadow: 0 0 20px var(--purple-glow);
+  transition: all 0.2s;
+}
+.btn-new-agent:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--purple-glow); }
+
+/* ═══════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════ */
+.nav-bar {
+  position: sticky; top: 65px; z-index: 99;
+  display: flex; align-items: center; gap: 2px;
+  padding: 8px 24px;
+  background: rgba(10, 14, 23, 0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.nav-tab {
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer;
+  white-space: nowrap; transition: all 0.2s;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+}
+.nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-tab.active {
+  color: #fff; background: rgba(124,58,237,0.15);
+  border-color: var(--purple);
+  box-shadow: 0 0 12px var(--purple-glow);
+}
+
+/* Status counter */
+.status-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 24px;
+  background: rgba(34,197,94,0.05);
+  border-bottom: 1px solid rgba(34,197,94,0.1);
+  font-size: 13px; font-weight: 600;
+}
+.status-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 8px; animation: pulse-dot 2s infinite; }
+.status-bar .count { color: var(--green); }
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ═══════════════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════════════ */
+.main { position: relative; z-index: 1; padding: 24px; min-height: calc(100vh - 180px); }
+.view { display: none; animation: fadeIn 0.3s ease; }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══════════════════════════════════════════════════
+   PIXEL ART AVATARS (CSS box-shadow technique)
+   ═══════════════════════════════════════════════════ */
+.pixel-avatar {
+  position: relative; width: 48px; height: 48px;
+  image-rendering: pixelated;
+}
+.pixel-avatar .pa-inner {
+  position: absolute; width: 4px; height: 4px;
+}
+/* We'll use emoji + colored circles as the primary approach for cleaner look */
+.avatar-circle {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; position: relative;
+  flex-shrink: 0;
+}
+.avatar-circle.lg { width: 64px; height: 64px; font-size: 28px; }
+.avatar-circle.xl { width: 80px; height: 80px; font-size: 36px; }
+.avatar-circle::after {
+  content: ''; position: absolute; inset: -3px;
+  border-radius: 50%; border: 2px solid currentColor; opacity: 0.3;
+}
+.avatar-joseph { background: linear-gradient(135deg, #92400e, var(--gold)); color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+.avatar-phantom { background: linear-gradient(135deg, #4c1d95, var(--purple)); color: var(--purple); box-shadow: 0 0 20px var(--purple-glow); }
+.avatar-chief { background: linear-gradient(135deg, #164e63, var(--cyan)); color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
+.avatar-remi { background: linear-gradient(135deg, #14532d, var(--green)); color: var(--green); box-shadow: 0 0 20px var(--green-glow); }
+.avatar-nora { background: linear-gradient(135deg, #831843, var(--pink)); color: var(--pink); box-shadow: 0 0 15px rgba(236,72,153,0.3); }
+
+
+/* Status dot */
+.status-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--bg);
+  position: absolute; bottom: 0; right: 0;
+}
+.status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.offline { background: var(--text-dim); }
+.status-dot.busy { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+
+/* LIVE badge */
+.badge-live {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: var(--green); font-size: 10px; font-weight: 700;
+  letter-spacing: 1px;
+}
+.badge-live .blink { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 1.5s infinite; }
+
+/* ═══════════════════════════════════════════════════
+   VIRTUAL OFFICE VIEW
+   ═══════════════════════════════════════════════════ */
+.virtual-office {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.room {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.room:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.room::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.room-bridge::before { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
+.room-bridge { grid-column: 1 / -1; }
+.room-research::before { background: var(--green); }
+.room-creative::before { background: var(--pink); }
+.room-war::before { background: var(--cyan); }
+.room-launch::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
+
+.room-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.room-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.room-status { font-size: 10px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+.room-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s infinite; }
+
+.room-agents { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-end; }
+.room-agent {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: relative;
+}
+.agent-name-tag {
+  font-size: 11px; font-weight: 700; color: #fff;
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(0,0,0,0.5);
+}
+.speech-bubble {
+  position: relative;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 10px; color: var(--text-muted);
+  max-width: 180px;
+  margin-top: 4px;
+}
+.speech-bubble::before {
+  content: ''; position: absolute; top: -5px; left: 20px;
+  width: 8px; height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  transform: rotate(45deg);
+}
+
+/* Pixel character body using CSS */
+.pixel-char {
+  width: 48px; height: 56px;
+  position: relative;
+  image-rendering: pixelated;
+}
+.pixel-char .head {
+  width: 24px; height: 24px; border-radius: 6px;
+  margin: 0 auto;
+  position: relative;
+}
+.pixel-char .head .eyes {
+  position: absolute; bottom: 6px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 6px;
+}
+.pixel-char .head .eyes span {
+  width: 4px; height: 4px; background: #fff; border-radius: 1px;
+}
+.pixel-char .body {
+  width: 28px; height: 18px; border-radius: 4px 4px 2px 2px;
+  margin: 2px auto 0;
+}
+.pixel-char .legs {
+  display: flex; gap: 4px; justify-content: center;
+  margin-top: 2px;
+}
+.pixel-char .legs span {
+  width: 10px; height: 10px; border-radius: 2px;
+}
+
+/* Floor tiles */
+.room-floor {
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.02) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.02) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  padding: 20px; border-radius: 8px; margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════
+   ORG CHART VIEW
+   ═══════════════════════════════════════════════════ */
+.org-chart {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; padding: 40px 20px;
+}
+.org-tier { display: flex; justify-content: center; gap: 24px; position: relative; }
+.org-connector {
+  width: 2px; height: 40px; margin: 0 auto;
+  background: linear-gradient(to bottom, var(--purple), var(--cyan));
+  box-shadow: 0 0 8px var(--purple-glow);
+  position: relative;
+}
+.org-connector-h {
+  height: 2px; margin: 0 auto;
+  background: linear-gradient(to right, var(--purple), var(--cyan));
+  box-shadow: 0 0 8px var(--purple-glow);
+  position: relative;
+  align-self: stretch;
+}
+.org-branch {
+  position: relative; display: flex; justify-content: center;
+  gap: 20px; padding-top: 40px;
+}
+.org-branch::before {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--purple), var(--cyan), var(--purple), transparent);
+  box-shadow: 0 0 8px var(--purple-glow);
+}
+.org-branch .org-node::before {
+  content: ''; position: absolute; top: -40px; left: 50%;
+  width: 2px; height: 40px;
+  background: linear-gradient(to bottom, var(--purple), var(--cyan));
+  box-shadow: 0 0 6px var(--purple-glow);
+}
+
+.org-node {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 20px; border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  min-width: 130px;
+  transition: all 0.3s;
+  position: relative;
+  cursor: pointer;
+}
+.org-node:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.org-node .node-name { font-size: 14px; font-weight: 700; color: #fff; }
+.org-node .node-role { font-size: 11px; color: var(--text-muted); text-align: center; }
+
+/* ═══════════════════════════════════════════════════
+   AGENTS VIEW
+   ═══════════════════════════════════════════════════ */
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.agent-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.agent-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.agent-card-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.agent-card-info { flex: 1; }
+.agent-card-info .name { font-size: 16px; font-weight: 700; color: #fff; }
+.agent-card-info .role { font-size: 12px; color: var(--text-muted); }
+.agent-card-status {
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.agent-card-status.online { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.agent-card-status.offline { background: rgba(100,116,139,0.1); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.2); }
+
+.agent-card h4 { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.resp-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+.resp-list li {
+  font-size: 12px; color: var(--text);
+  padding: 4px 0; display: flex; align-items: center; gap: 6px;
+}
+.resp-list li::before { content: '▸'; color: var(--purple); font-size: 10px; }
+.agent-card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+.tools-row { display: flex; gap: 4px; }
+.tool-badge {
+  padding: 3px 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-size: 10px; color: var(--text-muted);
+}
+.tasks-count { font-size: 12px; color: var(--cyan); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════
+   PLACEHOLDER VIEWS
+   ═══════════════════════════════════════════════════ */
+.placeholder-view {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 400px; gap: 16px;
+}
+.placeholder-view .icon { font-size: 48px; opacity: 0.3; }
+.placeholder-view .title { font-size: 20px; font-weight: 700; color: var(--text-muted); }
+.placeholder-view .desc { font-size: 13px; color: var(--text-dim); }
+
+/* ═══════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #111827;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 90%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.modal .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--text-muted); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.form-group input, .form-group select {
+  width: 100%; padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text); font-family: inherit; font-size: 14px;
+  transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none; border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-glow);
+}
+.form-group input::placeholder { color: var(--text-dim); }
+.form-group select option { background: #111827; }
+.emoji-grid {
+  display: grid; grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+}
+.emoji-btn {
+  width: 36px; height: 36px; border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.emoji-btn:hover { background: rgba(255,255,255,0.08); }
+.emoji-btn.selected { border-color: var(--purple); background: rgba(124,58,237,0.2); box-shadow: 0 0 8px var(--purple-glow); }
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 24px;
+}
+.btn-cancel {
+  padding: 10px 20px; border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted); font-family: inherit;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.08); }
+.btn-create {
+  padding: 10px 24px; border-radius: 8px;
+  background: var(--purple);
+  border: none; color: #fff; font-family: inherit;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 0 20px var(--purple-glow);
+  transition: all 0.2s;
+}
+.btn-create:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--purple-glow); }
+
+/* ═══════════════════════════════════════════════════
+   AGENT DETAIL PANEL (slide-in)
+   ═══════════════════════════════════════════════════ */
+.detail-panel {
+  position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+  background: #111827; border-left: 1px solid var(--border);
+  z-index: 150; padding: 24px; overflow-y: auto;
+  transition: right 0.3s ease;
+}
+.detail-panel.open { right: 0; }
+.detail-panel-overlay {
+  position: fixed; inset: 0; z-index: 149;
+  background: rgba(0,0,0,0.4);
+  display: none;
+}
+.detail-panel-overlay.open { display: block; }
+.detail-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.detail-close:hover { background: rgba(255,255,255,0.1); }
+.detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; margin-top: 20px; }
+.detail-info .name { font-size: 22px; font-weight: 800; color: #fff; }
+.detail-info .role { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.detail-section { margin-bottom: 20px; }
+.detail-section h4 {
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+.detail-section ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.detail-section li { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.detail-section li::before { content: '◆'; font-size: 6px; color: var(--purple); }
+.detail-stat-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.detail-stat {
+  padding: 12px; border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+}
+.detail-stat .val { font-size: 22px; font-weight: 800; color: var(--cyan); }
+.detail-stat .lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   CHIEF CHAT PANEL
+   ═══════════════════════════════════════════════════ */
+.chat-panel {
+  position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+  background: #0d1117; border-left: 1px solid var(--border);
+  z-index: 160; display: flex; flex-direction: column;
+  transition: right 0.3s ease;
+}
+.chat-panel.open { right: 0; }
+.chat-panel-overlay {
+  position: fixed; inset: 0; z-index: 159;
+  background: rgba(0,0,0,0.4);
+  display: none;
+}
+.chat-panel-overlay.open { display: block; }
+.chat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  background: rgba(6,182,212,0.05);
+}
+.chat-header-info { display: flex; align-items: center; gap: 10px; }
+.chat-header-info .chat-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #164e63, var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; box-shadow: 0 0 12px var(--cyan-glow);
+}
+.chat-header-info .chat-name { font-size: 14px; font-weight: 700; color: #fff; }
+.chat-header-info .chat-role { font-size: 11px; color: var(--text-muted); }
+.chat-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.chat-close:hover { background: rgba(255,255,255,0.1); }
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px; display: flex;
+  flex-direction: column; gap: 12px;
+}
+.chat-msg {
+  max-width: 85%; padding: 10px 14px; border-radius: 12px;
+  font-size: 13px; line-height: 1.5; word-wrap: break-word;
+}
+.chat-msg.user {
+  align-self: flex-end; background: var(--purple);
+  color: #fff; border-bottom-right-radius: 4px;
+}
+.chat-msg.agent {
+  align-self: flex-start; background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border); color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.system {
+  align-self: center; background: rgba(255,255,255,0.03);
+  color: var(--text-dim); font-size: 11px; padding: 6px 12px;
+  border-radius: 20px;
+}
+.chat-input-area {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; background: rgba(0,0,0,0.3);
+}
+.chat-input {
+  flex: 1; padding: 10px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  color: var(--text); font-family: inherit; font-size: 13px;
+  outline: none; transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-glow); }
+.chat-input::placeholder { color: var(--text-dim); }
+.chat-send {
+  padding: 10px 16px; border-radius: 8px;
+  background: var(--cyan); color: #fff; border: none;
+  cursor: pointer; font-family: inherit; font-size: 13px;
+  font-weight: 600; transition: all 0.2s;
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+.chat-send:hover { transform: translateY(-1px); box-shadow: 0 0 20px var(--cyan-glow); }
+.chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-chat-chief {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px;
+  background: rgba(6,182,212,0.15); color: var(--cyan);
+  border: 1px solid rgba(6,182,212,0.3); cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-chat-chief:hover { background: rgba(6,182,212,0.25); transform: translateY(-1px); box-shadow: 0 0 15px var(--cyan-glow); }
+/* OC action button spinner */
+.oc-btn-spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid transparent; border-top-color: currentColor;
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+  margin-right: 4px; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE (continued)
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .header { flex-wrap: wrap; gap: 8px; }
+  .header-center { order: 3; width: 100%; justify-content: center; }
+  .virtual-office { grid-template-columns: 1fr; }
+  .room-bridge { grid-column: auto; }
+  .agents-grid { grid-template-columns: 1fr; }
+  .org-branch { flex-wrap: wrap; justify-content: center; }
+  .detail-panel { width: 100%; right: -100%; }
+  .chat-panel { width: 100%; right: -100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background effects -->
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-icon">F</div>
+    <div class="logo-text">
+      <div class="brand">FUSION MEDIA</div>
+      <div class="sub">Mission Control</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="stat-pill"><span class="num" id="stat-agents">5</span><span class="label">Agents</span></div>
+    <div class="stat-pill"><span class="num" id="stat-tasks">24</span><span class="label">Tasks</span></div>
+    <div class="stat-pill"><span class="num" id="stat-uptime">99.8%</span><span class="label">Uptime</span></div>
+    <div class="stat-pill" style="cursor:pointer;" onclick="document.querySelector('[data-view=operating-centre]').click()" title="Operating Centre Status"><span id="oc-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);display:inline-block;"></span><span class="label" style="margin-left:4px;">OC</span></div>
+  </div>
+  <div class="header-right">
+    <div class="live-clock"><span id="clock"></span><span class="tz" id="tz"></span></div>
+    <button class="btn-chat-chief" onclick="openChat()">🎯 Message Chief</button>
+    <button class="btn-new-agent" onclick="openModal()">＋ New Agent</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════════════ -->
+<nav class="nav-bar" id="nav">
+  <button class="nav-tab active" data-view="virtual-office">Virtual Office</button>
+  <button class="nav-tab" data-view="daily-plan">Daily Plan</button>
+  <button class="nav-tab" data-view="org-chart">Org Chart</button>
+  <button class="nav-tab" data-view="agents">Agents</button>
+  <button class="nav-tab" data-view="cron-jobs">Cron Jobs</button>
+  <button class="nav-tab" data-view="heartbeats">Heartbeats</button>
+  <button class="nav-tab" data-view="profiles">Profiles</button>
+  <button class="nav-tab" data-view="sub-agents">Sub-Agents</button>
+  <button class="nav-tab" data-view="logs">Logs</button>
+  <button class="nav-tab" data-view="operating-centre">Operating Centre</button>
+  <button class="nav-tab" data-view="security">Security</button>
+</nav>
+
+<!-- Status Counter -->
+<div class="status-bar">
+  <span class="dot"></span>
+  <span class="count" id="op-count">5</span>&nbsp;/&nbsp;5 AGENTS OPERATIONAL
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT VIEWS
+     ═══════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ─── VIRTUAL OFFICE ─── -->
+  <section class="view active" id="view-virtual-office">
+    <div class="virtual-office">
+      <!-- The Bridge -->
+      <div class="room room-bridge room-floor">
+        <div class="room-header">
+          <span class="room-name">🌌 THE BRIDGE</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="room-agent">
+            <span class="agent-name-tag" style="color:var(--gold)">👑 Joseph</span>
+            <div class="pixel-char">
+              <div class="head" style="background:linear-gradient(135deg,#92400e,var(--gold))"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:linear-gradient(135deg,#78350f,#b45309)"></div>
+              <div class="legs"><span style="background:#78350f"></span><span style="background:#78350f"></span></div>
+            </div>
+            <div class="speech-bubble">Reviewing daily priorities...</div>
+          </div>
+          <div class="room-agent">
+            <span class="agent-name-tag" style="color:var(--purple)">👻 Phantom</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div class="pixel-char">
+                <div class="head" style="background:linear-gradient(135deg,#4c1d95,var(--purple));box-shadow:0 0 12px var(--purple-glow)"><div class="eyes"><span></span><span></span></div></div>
+                <div class="body" style="background:linear-gradient(135deg,#3b0764,#6d28d9)"></div>
+                <div class="legs"><span style="background:#3b0764"></span><span style="background:#3b0764"></span></div>
+              </div>
+            </div>
+            <span class="badge-live"><span class="blink"></span>LIVE</span>
+            <div class="speech-bubble">Delegating morning tasks to all agents...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Research Lab -->
+      <div class="room room-research room-floor">
+        <div class="room-header">
+          <span class="room-name">🔬 RESEARCH LAB</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="room-agent">
+            <span class="agent-name-tag" style="color:var(--green)">🔍 Remi</span>
+            <div class="pixel-char">
+              <div class="head" style="background:linear-gradient(135deg,#14532d,var(--green))"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:linear-gradient(135deg,#15803d,#16a34a)"></div>
+              <div class="legs"><span style="background:#15803d"></span><span style="background:#15803d"></span></div>
+            </div>
+            <div class="speech-bubble">Scanning Twitter for viral hooks...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creative Studio -->
+      <div class="room room-creative room-floor">
+        <div class="room-header">
+          <span class="room-name">🎨 CREATIVE STUDIO</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="room-agent">
+            <span class="agent-name-tag" style="color:var(--pink)">✨ Nora</span>
+            <div class="pixel-char">
+              <div class="head" style="background:linear-gradient(135deg,#831843,var(--pink))"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:linear-gradient(135deg,#9d174d,#db2777)"></div>
+              <div class="legs"><span style="background:#9d174d"></span><span style="background:#9d174d"></span></div>
+            </div>
+            <div class="speech-bubble">Drafting 3 YouTube hook concepts...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- War Room -->
+      <div class="room room-war room-floor">
+        <div class="room-header">
+          <span class="room-name">⚔️ WAR ROOM</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="room-agent">
+            <span class="agent-name-tag" style="color:var(--cyan)">🎯 Chief</span>
+            <div class="pixel-char">
+              <div class="head" style="background:linear-gradient(135deg,#164e63,var(--cyan))"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:linear-gradient(135deg,#0e7490,#06b6d4)"></div>
+              <div class="legs"><span style="background:#0e7490"></span><span style="background:#0e7490"></span></div>
+            </div>
+            <div class="speech-bubble">Coordinating client deliverables...</div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- ─── ORG CHART ─── -->
+  <section class="view" id="view-org-chart">
+    <div class="org-chart">
+      <!-- Tier 1: Joseph -->
+      <div class="org-tier">
+        <div class="org-node" onclick="showDetail('joseph')" style="border-color:rgba(245,158,11,0.2)">
+          <div class="avatar-circle lg avatar-joseph" style="position:relative">👑<span class="status-dot online"></span></div>
+          <div class="node-name">Joseph</div>
+          <div class="node-role">CEO / Founder</div>
+        </div>
+      </div>
+      <div class="org-connector"></div>
+      <!-- Tier 2: Phantom -->
+      <div class="org-tier">
+        <div class="org-node" onclick="showDetail('phantom')" style="border-color:rgba(124,58,237,0.2)">
+          <div class="avatar-circle lg avatar-phantom" style="position:relative">👻<span class="status-dot online"></span></div>
+          <div class="node-name">Phantom</div>
+          <div class="node-role">Business OS / Chief of Staff</div>
+          <span class="badge-live"><span class="blink"></span>LIVE</span>
+        </div>
+      </div>
+      <div class="org-connector"></div>
+      <!-- Tier 3: Sub-agents -->
+      <div class="org-branch">
+        <div class="org-node" onclick="showDetail('chief')">
+          <div class="avatar-circle avatar-chief" style="position:relative">🎯<span class="status-dot online"></span></div>
+          <div class="node-name">Chief</div>
+          <div class="node-role">Tactical Orchestrator</div>
+        </div>
+        <div class="org-node" onclick="showDetail('remi')">
+          <div class="avatar-circle avatar-remi" style="position:relative">🔍<span class="status-dot online"></span></div>
+          <div class="node-name">Remi</div>
+          <div class="node-role">Research Agent</div>
+        </div>
+        <div class="org-node" onclick="showDetail('nora')">
+          <div class="avatar-circle avatar-nora" style="position:relative">✨<span class="status-dot online"></span></div>
+          <div class="node-name">Nora</div>
+          <div class="node-role">Ideas & Content</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── AGENTS ─── -->
+  <section class="view" id="view-agents">
+    <div class="agents-grid" id="agents-grid"></div>
+  </section>
+
+  <!-- ─── PLACEHOLDER VIEWS ─── -->
+  <section class="view" id="view-daily-plan">
+    <div class="placeholder-view"><div class="icon">📋</div><div class="title">Daily Plan</div><div class="desc">Today's priorities and task assignments — coming soon</div></div>
+  </section>
+  <section class="view" id="view-cron-jobs">
+    <div class="placeholder-view"><div class="icon">⏰</div><div class="title">Cron Jobs</div><div class="desc">Scheduled automations and recurring tasks — coming soon</div></div>
+  </section>
+  <section class="view" id="view-heartbeats">
+    <div class="placeholder-view"><div class="icon">💓</div><div class="title">Heartbeats</div><div class="desc">Agent health monitoring and uptime tracking — coming soon</div></div>
+  </section>
+  <section class="view" id="view-profiles">
+    <div class="placeholder-view"><div class="icon">👤</div><div class="title">Profiles</div><div class="desc">Agent profiles and configuration — coming soon</div></div>
+  </section>
+  <section class="view" id="view-sub-agents">
+    <div class="placeholder-view"><div class="icon">🤖</div><div class="title">Sub-Agents</div><div class="desc">Nested agent management and delegation chains — coming soon</div></div>
+  </section>
+  <section class="view" id="view-logs">
+    <div class="placeholder-view"><div class="icon">📜</div><div class="title">Logs</div><div class="desc">System logs and agent activity history — coming soon</div></div>
+  </section>
+  <section class="view" id="view-operating-centre">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:28px;">🎛️</span>
+          <div>
+            <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Operating Centre</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin:0;">Connected to Fusion Media Operating Centre API</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="oc-connection-status" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.04);border:1px solid var(--border);font-size:12px;">
+            <span id="oc-conn-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);"></span>
+            <span id="oc-conn-label" style="color:var(--text-muted);">Checking...</span>
+          </div>
+          <button onclick="loadOCClients()" style="padding:8px 16px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;box-shadow:0 0 20px var(--purple-glow);transition:all 0.2s;">⟳ Refresh</button>
+        </div>
+      </div>
+      <div id="oc-clients" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;"></div>
+      <div id="oc-action-log" style="margin-top:24px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;display:none;">
+        <h4 style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Action Log</h4>
+        <div id="oc-log-entries" style="font-size:12px;color:var(--text);max-height:200px;overflow-y:auto;font-family:monospace;"></div>
+      </div>
+    </div>
+  </section>
+  <section class="view" id="view-security">
+    <div class="placeholder-view"><div class="icon">🔒</div><div class="title">Security</div><div class="desc">API keys, access control, and audit trail — coming soon</div></div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════
+     CREATE AGENT MODAL
+     ═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>Create New Agent</h2>
+    <p class="modal-sub">Deploy a new AI agent to the Fusion Media network</p>
+
+    <div class="form-group">
+      <label>Profile Name</label>
+      <input type="text" placeholder="e.g. sales-ai" id="f-profile">
+    </div>
+    <div class="form-group">
+      <label>Agent Name</label>
+      <input type="text" placeholder="e.g. Sales Agent" id="f-name">
+    </div>
+    <div class="form-group">
+      <label>Role</label>
+      <input type="text" placeholder="e.g. Sales Operations" id="f-role">
+    </div>
+    <div class="form-group">
+      <label>Avatar Emoji</label>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+    <div class="form-group">
+      <label>Provider</label>
+      <select id="f-provider">
+        <option>Claude</option><option>GPT</option><option>Gemini</option><option>Grok</option><option>Local</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Business Scope</label>
+      <select id="f-scope">
+        <option>Fusion Media</option><option>AI Agency Circle</option><option>Both</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Port (auto-assigned)</label>
+      <input type="text" value="8100" readonly style="opacity:0.5" id="f-port">
+    </div>
+    <div class="form-group">
+      <label>Telegram Bot Token (optional)</label>
+      <input type="text" placeholder="123456:ABC-DEF..." id="f-token">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-create" onclick="createAgent()">Create Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     DETAIL PANEL
+     ═══════════════════════════════════════════════════ -->
+<div class="detail-panel-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <button class="detail-close" onclick="closeDetail()">✕</button>
+  <div id="detail-content"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     CHIEF CHAT PANEL
+     ═══════════════════════════════════════════════════ -->
+<div class="chat-panel-overlay" id="chat-overlay" onclick="closeChat()"></div>
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🎯</div>
+      <div>
+        <div class="chat-name">Chief</div>
+        <div class="chat-role">Tactical Orchestrator</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="closeChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg system">Chat with Chief via the Operating Centre API</div>
+  </div>
+  <div class="chat-input-area">
+    <input class="chat-input" id="chat-input" type="text" placeholder="Message Chief..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" id="chat-send-btn" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════ -->
+<script>
+// ─── Operating Centre Config ───
+const OC_CONFIG = { baseUrl: 'http://localhost:3000', agentApiKey: '6f5714fbf4734054db268e11ddb939bffd626caaab29034f32c06ab9bece4ab1' };
+
+async function ocFetch(endpoint, body = {}) {
+  try {
+    const isGet = endpoint === '/api/ping';
+    const opts = isGet ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Agent-Key': OC_CONFIG.agentApiKey }, body: JSON.stringify(body) };
+    const res = await fetch(OC_CONFIG.baseUrl + endpoint, opts);
+    return await res.json();
+  } catch(e) { console.error('OC Error:', e); return null; }
+}
+
+async function checkOCConnection() {
+  try { const r = await fetch(OC_CONFIG.baseUrl + '/api/ping', {signal: AbortSignal.timeout(3000)}); return r.ok; } catch { return false; }
+}
+
+// ─── Agent Data ───
+const agents = {
+  joseph: {
+    name: 'Joseph', role: 'CEO / Founder', emoji: '👑', tier: 1,
+    avatarClass: 'avatar-joseph', status: 'online', color: '#f59e0b',
+    responsibilities: ['Strategic vision & direction', 'Final approvals', 'Business development', 'Investor relations', 'Team leadership'],
+    tools: ['Telegram', 'Notion', 'Slack'], tasks: 5
+  },
+  phantom: {
+    name: 'Phantom', role: 'Business OS / Chief of Staff', emoji: '👻', tier: 2,
+    avatarClass: 'avatar-phantom', status: 'online', live: true, color: '#7C3AED',
+    responsibilities: ['Morning briefs', 'Delegation', 'Priority management', 'Focus enforcement', 'Cross-agent coordination', 'Reporting to Joseph'],
+    tools: ['Claude', 'Telegram', 'Notion', 'Calendar'], tasks: 8
+  },
+  chief: {
+    name: 'Chief', role: 'Tactical Orchestrator', emoji: '🎯', tier: 3,
+    avatarClass: 'avatar-chief', status: 'online', color: '#06b6d4',
+    responsibilities: ['Client delivery orchestration', 'Content pipeline management', 'Editor coordination', 'Quality control'],
+    tools: ['Notion', 'Frame.io', 'Slack'], tasks: 6
+  },
+  remi: {
+    name: 'Remi', role: 'Research Agent', emoji: '🔍', tier: 3,
+    avatarClass: 'avatar-remi', status: 'online', color: '#22c55e',
+    responsibilities: ['Market research', 'Competitor analysis', 'Trend scanning (Twitter/LinkedIn/YouTube)', 'Viral content detection', 'Audience insights'],
+    tools: ['Twitter', 'YouTube', 'LinkedIn', 'Perplexity'], tasks: 4
+  },
+  nora: {
+    name: 'Nora', role: 'Ideas & Content Agent', emoji: '✨', tier: 3,
+    avatarClass: 'avatar-nora', status: 'online', color: '#ec4899',
+    responsibilities: ['Content ideation', 'Script frameworks', 'Hook writing', 'Thumbnail concepts', 'Content calendar'],
+    tools: ['Notion', 'Claude', 'Canva'], tasks: 5
+  },
+
+};
+
+// ─── Navigation ───
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const view = document.getElementById('view-' + tab.dataset.view);
+    if (view) view.classList.add('active');
+  });
+});
+
+// ─── Clock ───
+function updateClock() {
+  const now = new Date();
+  const opts = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+  const dateOpts = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+  document.getElementById('clock').textContent =
+    now.toLocaleDateString('en-GB', dateOpts) + '  ' + now.toLocaleTimeString('en-GB', opts);
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  document.getElementById('tz').textContent = tz;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ─── Build Agents Grid ───
+function buildAgentsGrid() {
+  const grid = document.getElementById('agents-grid');
+  grid.innerHTML = '';
+  Object.entries(agents).forEach(([key, a]) => {
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.onclick = () => showDetail(key);
+    card.innerHTML = `
+      <div class="agent-card-header">
+        <div class="avatar-circle ${a.avatarClass}" style="position:relative">
+          ${a.emoji}
+          <span class="status-dot ${a.status}"></span>
+        </div>
+        <div class="agent-card-info">
+          <div class="name">${a.name}</div>
+          <div class="role">${a.role}</div>
+        </div>
+        <span class="agent-card-status ${a.status}">${a.status}</span>
+      </div>
+      <h4>Responsibilities</h4>
+      <ul class="resp-list">
+        ${a.responsibilities.map(r => `<li>${r}</li>`).join('')}
+      </ul>
+      <div class="agent-card-footer">
+        <div class="tools-row">${a.tools.map(t => `<span class="tool-badge">${t}</span>`).join('')}</div>
+        <div class="tasks-count">${a.tasks} tasks</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+buildAgentsGrid();
+
+// ─── Detail Panel ───
+function showDetail(key) {
+  const a = agents[key];
+  if (!a) return;
+  const panel = document.getElementById('detail-panel');
+  const overlay = document.getElementById('detail-overlay');
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-header">
+      <div class="avatar-circle lg ${a.avatarClass}" style="position:relative">
+        ${a.emoji}
+        <span class="status-dot ${a.status}"></span>
+      </div>
+      <div class="detail-info">
+        <div class="name">${a.name}</div>
+        <div class="role">${a.role}</div>
+        ${a.live ? '<span class="badge-live" style="margin-top:4px"><span class="blink"></span>LIVE</span>' : ''}
+      </div>
+    </div>
+    <div class="detail-stat-grid">
+      <div class="detail-stat"><div class="val">${a.tasks}</div><div class="lbl">Active Tasks</div></div>
+      <div class="detail-stat"><div class="val">${a.status === 'online' ? '99.9%' : '—'}</div><div class="lbl">Uptime</div></div>
+      <div class="detail-stat"><div class="val">Tier ${a.tier}</div><div class="lbl">Hierarchy</div></div>
+      <div class="detail-stat"><div class="val">${a.tools.length}</div><div class="lbl">Tools</div></div>
+    </div>
+    <div class="detail-section" style="margin-top:20px">
+      <h4>Responsibilities</h4>
+      <ul>${a.responsibilities.map(r => `<li>${r}</li>`).join('')}</ul>
+    </div>
+    <div class="detail-section">
+      <h4>Tools & Platforms</h4>
+      <div class="tools-row" style="flex-wrap:wrap;gap:6px;display:flex">
+        ${a.tools.map(t => `<span class="tool-badge">${t}</span>`).join('')}
+      </div>
+    </div>
+  `;
+  panel.classList.add('open');
+  overlay.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+
+// ─── Modal ───
+const emojis = ['🤖','🧠','💡','📊','📈','🎯','🔥','⚡','🚀','💎','🛡️','🎨','📝','🔍','🌐','💰','📣','🎬','🧪','📡','🏗️','⚙️','🔧','💻','📱','🎮','👁️','🦾','🧬','✨'];
+function buildEmojiGrid() {
+  const grid = document.getElementById('emoji-grid');
+  emojis.forEach(e => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'emoji-btn';
+    btn.textContent = e;
+    btn.onclick = () => {
+      grid.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    grid.appendChild(btn);
+  });
+}
+buildEmojiGrid();
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  // Random port
+  document.getElementById('f-port').value = 8100 + Object.keys(agents).length;
+}
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function createAgent() {
+  const name = document.getElementById('f-name').value.trim();
+  const profile = document.getElementById('f-profile').value.trim();
+  const role = document.getElementById('f-role').value.trim();
+  const selected = document.querySelector('.emoji-btn.selected');
+  const emoji = selected ? selected.textContent : '🤖';
+  if (!name) { alert('Agent name is required'); return; }
+  const key = profile || name.toLowerCase().replace(/\s+/g, '-');
+  agents[key] = {
+    name, role: role || 'Agent', emoji, tier: 3,
+    avatarClass: 'avatar-chief', status: 'online', color: '#06b6d4',
+    responsibilities: ['Assigned via Mission Control'],
+    tools: [document.getElementById('f-provider').value],
+    tasks: 0
+  };
+  document.getElementById('stat-agents').textContent = Object.keys(agents).length;
+  buildAgentsGrid();
+  closeModal();
+  // Reset form
+  ['f-profile','f-name','f-role','f-token'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+}
+
+// ─── Animated task counter ───
+let taskCount = 24;
+setInterval(() => {
+  if (Math.random() > 0.7) {
+    taskCount += Math.random() > 0.5 ? 1 : -1;
+    taskCount = Math.max(18, Math.min(35, taskCount));
+    document.getElementById('stat-tasks').textContent = taskCount;
+  }
+}, 5000);
+
+// ─── Keyboard shortcuts ───
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeDetail();
+  }
+});
+
+// ─── Operating Centre Integration ───
+function ocLog(msg) {
+  const log = document.getElementById('oc-action-log');
+  const entries = document.getElementById('oc-log-entries');
+  if (!log || !entries) return;
+  log.style.display = 'block';
+  const time = new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  entries.innerHTML = `<div style="padding:3px 0;border-bottom:1px solid var(--border);">[${time}] ${msg}</div>` + entries.innerHTML;
+}
+
+async function updateOCStatus() {
+  const connected = await checkOCConnection();
+  const dot = document.getElementById('oc-status-dot');
+  const connDot = document.getElementById('oc-conn-dot');
+  const connLabel = document.getElementById('oc-conn-label');
+  if (dot) {
+    dot.style.background = connected ? 'var(--green)' : 'var(--red)';
+    dot.style.boxShadow = connected ? '0 0 6px var(--green)' : '0 0 6px var(--red)';
+  }
+  if (connDot) {
+    connDot.style.background = connected ? 'var(--green)' : 'var(--red)';
+    connDot.style.boxShadow = connected ? '0 0 6px var(--green)' : '0 0 6px var(--red)';
+  }
+  if (connLabel) {
+    connLabel.textContent = connected ? 'Connected' : 'Disconnected';
+    connLabel.style.color = connected ? 'var(--green)' : 'var(--red)';
+  }
+  return connected;
+}
+
+// Store loaded clients for reference
+let ocClientsCache = [];
+
+async function loadOCClients() {
+  const container = document.getElementById('oc-clients');
+  if (!container) return;
+  const connected = await updateOCStatus();
+  if (!connected) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted);"><div style="font-size:48px;opacity:0.3;margin-bottom:16px;">🔌</div><div style="font-size:16px;font-weight:600;">Operating Centre Offline</div><div style="font-size:13px;margin-top:8px;">Could not connect to ' + OC_CONFIG.baseUrl + '</div></div>';
+    return;
+  }
+  container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading clients...</div>';
+  ocLog('Fetching client list...');
+  const data = await ocFetch('/api/agent/list-clients');
+  if (!data || !data.clients) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No clients found or API error</div>';
+    ocLog('Failed to load clients');
+    return;
+  }
+  ocClientsCache = data.clients;
+  ocLog(`Loaded ${data.clients.length} client(s)`);
+  container.innerHTML = '';
+  data.clients.forEach(client => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all 0.3s;';
+    card.onmouseenter = () => { card.style.borderColor = 'var(--border-hover)'; card.style.transform = 'translateY(-2px)'; };
+    card.onmouseleave = () => { card.style.borderColor = 'var(--border)'; card.style.transform = 'none'; };
+    const niche = client.niche || 'General';
+    const biz = client.businessName || client.name;
+    const cId = client.id;
+    const ytSubs = client.youtubeSubscriberCount;
+    const ytChannel = client.youtubeChannelId;
+    const hasYT = ytSubs || ytChannel;
+    let ytHtml = '';
+    if (hasYT) {
+      ytHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;border-radius:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);">'
+        + '<span style="font-size:16px;">📺</span>'
+        + '<div style="flex:1;">'
+        + (ytSubs ? '<span style="font-size:13px;font-weight:700;color:var(--red);">' + Number(ytSubs).toLocaleString() + '</span><span style="font-size:11px;color:var(--text-muted);margin-left:4px;">subscribers</span>' : '')
+        + (ytChannel ? '<div style="font-size:10px;color:var(--text-dim);margin-top:2px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;">' + ytChannel + '</div>' : '')
+        + '</div></div>';
+    }
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏢</div>
+        <div style="flex:1;">
+          <div style="font-size:16px;font-weight:700;color:#fff;">${client.name}</div>
+          <div style="font-size:12px;color:var(--text-muted);">${biz}</div>
+        </div>
+        <span style="padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;background:rgba(124,58,237,0.1);color:var(--purple);border:1px solid rgba(124,58,237,0.2);">${niche}</span>
+      </div>
+      ${ytHtml}
+
+    `;
+    container.appendChild(card);
+  });
+}
+
+
+
+// ─── Chief Chat ───
+const chatHistory = [];
+function openChat() {
+  document.getElementById('chat-panel').classList.add('open');
+  document.getElementById('chat-overlay').classList.add('open');
+  document.getElementById('chat-input').focus();
+}
+function closeChat() {
+  document.getElementById('chat-panel').classList.remove('open');
+  document.getElementById('chat-overlay').classList.remove('open');
+}
+
+function appendChatMsg(role, text) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('chat-send-btn');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  appendChatMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  input.disabled = true;
+
+  try {
+    const result = await ocFetch('/api/agent/chat', { message: msg, sessionId: 'mission-control' });
+    if (result && result.response) {
+      appendChatMsg('agent', result.response);
+      chatHistory.push({ role: 'agent', content: result.response });
+    } else if (result && result.error) {
+      appendChatMsg('system', 'Error: ' + result.error);
+    } else {
+      appendChatMsg('system', 'No response from Chief');
+    }
+  } catch (e) {
+    appendChatMsg('system', 'Connection error: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send';
+  input.disabled = false;
+  input.focus();
+}
+
+// Close chat with Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeChat();
+});
+
+// Init OC on load
+updateOCStatus();
+loadOCClients();
+setInterval(updateOCStatus, 30000);
+</script>
+</body>
+</html>
