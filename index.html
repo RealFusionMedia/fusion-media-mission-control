@@ -1330,206 +1330,177 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 });
 
 // ═══════════════════════════════════════════════
-// VIRTUAL OFFICE SIMULATION ENGINE
+// VIRTUAL OFFICE SIMULATION ENGINE — 2D Movement
 // ═══════════════════════════════════════════════
 (function() {
-  const rand = (min, max) => Math.random() * (max - min) + min;
-  const randInt = (min, max) => Math.floor(rand(min, max));
-  const pick = arr => arr[randInt(0, arr.length)];
+  const rand  = (a, b) => Math.random() * (b - a) + a;
+  const randI = (a, b) => Math.floor(rand(a, b));
+  const pick  = arr => arr[randI(0, arr.length)];
 
-  // Speech lines per agent per state
   const lines = {
-    joseph: {
-      work: ['Reviewing KPIs...','Checking revenue...','Planning Q2...','Reading reports...','Approving content...','Monitoring growth...','Setting targets...','Reviewing pipeline...'],
-      walk: ['Taking a walk...','Stretching legs...','Checking in...','Getting coffee...'],
-      chat: ['Delegating to Phantom...','Reviewing with Phantom...','Strategy session...'],
+    joseph:  {
+      work: ['Reviewing KPIs...','Checking revenue...','Planning Q2...','Reading reports...','Approving content...','Monitoring growth...','Setting targets...','Reviewing pipeline...','Checking metrics...','Evaluating strategy...'],
+      walk: ['Taking a walk...','Stretching legs...','Getting coffee...','Thinking out loud...','Checking the room...'],
     },
     phantom: {
-      work: ['Running automations...','Processing tasks...','Analysing data...','Optimising pipeline...','Writing scripts...','Monitoring agents...','Reviewing learnings...','Scheduling crons...'],
-      walk: ['Heading to agency...','Patrolling The Bridge...','Checking systems...'],
-      visit: ['Briefing Chief...','Syncing with agency...','Reviewing client work...','Delivering instructions...','Checking progress...'],
-      chat: ['Discussing strategy...','Syncing with Joseph...'],
+      work: ['Running automations...','Processing tasks...','Analysing data...','Writing scripts...','Monitoring agents...','Reviewing learnings...','Scheduling crons...','Optimising pipeline...','Building workflows...'],
+      walk: ['Patrolling The Bridge...','Checking systems...','Running diagnostics...','Reviewing status...'],
+      visit: ['Briefing Chief...','Syncing with agency...','Reviewing client work...','Delivering instructions...','Checking on progress...','Agency check-in...'],
     },
     chief: {
-      work: ['Coordinating Remi...','Reviewing ideas...','Briefing Nora...','Running workflows...','Checking deliverables...','Managing clients...','Scheduling research...','Reviewing output...'],
-      walk: ['Circulating the floor...','Checking on team...','Reviewing progress...'],
-      chat: ['Briefing with Phantom...','Getting instructions...','Strategy sync...'],
+      work: ['Coordinating Remi...','Reviewing ideas...','Briefing Nora...','Running workflows...','Checking deliverables...','Managing clients...','Reviewing output...','Scheduling research...'],
+      walk: ['Circulating the floor...','Checking on team...','Reviewing progress...','Inspecting outputs...'],
     },
     remi: {
-      work: ['Scanning for trends...','Analysing competitors...','Researching hooks...','Finding viral topics...','Mining comments...','Checking YouTube data...','Building research report...','Pulling analytics...'],
-      walk: ['Consulting Chief...','Grabbing notes...','Stretching...'],
+      work: ['Scanning for trends...','Analysing competitors...','Researching hooks...','Finding viral topics...','Mining comments...','Checking YouTube data...','Building research report...','Pulling analytics...','Studying top videos...'],
+      walk: ['Consulting Chief...','Grabbing notes...','Stretching...','Checking the board...'],
     },
     nora: {
       work: ['Writing hook concepts...','Drafting ideas...','Crafting scripts...','Ideating content...','Building idea bank...','Writing descriptions...','Generating titles...','Creating short-form...'],
-      walk: ['Getting inspiration...','Consulting Remi...','Taking a break...'],
+      walk: ['Getting inspiration...','Consulting Remi...','Taking a break...','Reviewing concepts...'],
     },
   };
 
-  // Agent state machines
-  const agents = {
-    joseph:  { el: null, sprite: null, bubble: null, state: 'work', timer: 0, x: 40, room: 'bridge', dir: 1, deskX: 40 },
-    phantom: { el: null, sprite: null, bubble: null, state: 'work', timer: 0, x: null, room: 'bridge', dir: -1, deskX: null, visiting: false },
-    chief:   { el: null, sprite: null, bubble: null, state: 'work', timer: 0, x: 50, room: 'agency', dir: 1, deskX: 50, isPercent: true },
-    remi:    { el: null, sprite: null, bubble: null, state: 'work', timer: 0, x: 24, room: 'agency', dir: 1, deskX: 24 },
-    nora:    { el: null, sprite: null, bubble: null, state: 'work', timer: 0, x: null, room: 'agency', dir: -1, deskX: null, isRight: true, rightX: 24 },
+  // desk positions as % of room width/height (0–100)
+  const desks = {
+    joseph:  { x: 15, y: 70 },
+    phantom: { x: 75, y: 70 },
+    chief:   { x: 48, y: 35 },
+    remi:    { x: 15, y: 72 },
+    nora:    { x: 78, y: 72 },
   };
 
-  function init() {
-    for (const [name, a] of Object.entries(agents)) {
-      a.el = document.getElementById('agent-' + name);
-      if (!a.el) continue;
-      a.sprite = a.el.querySelector('.sprite');
-      a.bubble = a.el.querySelector('.speech-bubble');
-      // Set initial desk positions from element style
-      if (name === 'phantom') { a.deskX = getRightPx(a.el); a.x = a.deskX; }
-      if (name === 'nora') { a.deskX = getRightPx(a.el); a.rightX = a.deskX; }
-      // Start at desk
-      scheduleNext(name, a);
-    }
-    setInterval(tick, 100);
+  // bounds: % of room (leave margin for walls)
+  const bounds = { xMin: 5, xMax: 88, yMin: 12, yMax: 80 };
+
+  const agents = {};
+  ['joseph','phantom','chief','remi','nora'].forEach(name => {
+    agents[name] = {
+      el: null, sprite: null, bubble: null,
+      state: 'work',
+      x: desks[name].x, y: desks[name].y,
+      tx: desks[name].x, ty: desks[name].y,
+      moving: false, timer: Date.now() + randI(2000, 8000),
+    };
+  });
+
+  function getRoom(name) {
+    const a = agents[name];
+    return a.el ? a.el.closest('.room-agents') : null;
   }
 
-  function getRightPx(el) {
-    const r = el.style.right;
-    return r ? parseInt(r) : 24;
-  }
-
-  function setPos(a, name) {
+  function setPos(name) {
+    const a = agents[name];
     if (!a.el) return;
-    if (name === 'phantom' || name === 'nora') {
-      // right-anchored
-      a.el.style.right = a.x + 'px';
-      a.el.style.left = '';
-    } else if (name === 'chief' && a.isPercent) {
-      a.el.style.left = a.x + '%';
-      a.el.style.transform = 'translateX(-50%)';
-      a.el.style.right = '';
-    } else {
-      a.el.style.left = a.x + 'px';
-      a.el.style.right = '';
-    }
-  }
-
-  function getMaxX(name) {
-    const room = agents[name].room;
-    const el = document.getElementById('agent-' + name);
-    if (!el) return 200;
-    const container = el.parentElement;
-    if (!container) return 200;
-    return Math.max(40, container.offsetWidth - 80);
+    const room = getRoom(name);
+    if (!room) return;
+    const rw = room.offsetWidth  || 400;
+    const rh = room.offsetHeight || 280;
+    const px = (a.x / 100) * rw;
+    const py = (a.y / 100) * rh;
+    // position from bottom-left
+    a.el.style.left   = px + 'px';
+    a.el.style.bottom = (rh - py - 80) + 'px';
+    a.el.style.right  = '';
+    a.el.style.transform = '';
   }
 
   function setSpeech(a, text) {
     if (!a.bubble) return;
     a.bubble.textContent = text;
     a.bubble.classList.remove('hidden');
-    clearTimeout(a._bubbleTimer);
-    a._bubbleTimer = setTimeout(() => { if(a.bubble) a.bubble.classList.add('hidden'); }, 4000);
+    clearTimeout(a._bt);
+    a._bt = setTimeout(() => a.bubble && a.bubble.classList.add('hidden'), 4500);
   }
 
-  function setWalking(a, walking) {
+  function setWalking(a, on) {
     if (!a.sprite) return;
-    if (walking) {
-      a.sprite.classList.add('walking');
-      a.sprite.classList.remove('idle');
-    } else {
-      a.sprite.classList.remove('walking');
-      a.sprite.classList.add('idle');
-    }
-  }
-
-  function flipSprite(a, dir) {
-    if (!a.sprite) return;
-    a.sprite.style.transform = dir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+    a.sprite.classList.toggle('walking', on);
+    a.sprite.classList.toggle('idle', !on);
   }
 
   function scheduleNext(name, a) {
-    if (!a.el) return;
-    const isWork = Math.random() < 0.65; // 65% chance to go back to desk
-    const duration = isWork
-      ? randInt(15, 120) * 1000      // 15s–2min at desk
-      : randInt(5, 20) * 1000;        // 5–20s walking
+    const goDesk = Math.random() < 0.62;
+    const dur = goDesk ? randI(12, 90) * 1000 : randI(4, 18) * 1000;
+    a.state = goDesk ? 'work' : 'walk';
+    a.timer = Date.now() + dur;
 
-    a.state = isWork ? 'work' : 'walk';
-    a.timer = Date.now() + duration;
-
-    if (isWork) {
-      // Walk back to desk first
-      a.targetX = (name === 'phantom') ? a.deskX : (name === 'nora') ? a.deskX : (name === 'chief') ? 50 : a.deskX;
-      setWalking(a, true);
-    } else {
-      // Random target in room
-      const maxX = getMaxX(name);
-      a.targetX = (name === 'phantom' || name === 'nora')
-        ? randInt(10, maxX)
-        : (name === 'chief')
-          ? randInt(15, 85)  // percent
-          : randInt(10, maxX);
-    }
-
-    // Phantom occasionally visits Agency
-    if (name === 'phantom' && !isWork && Math.random() < 0.3) {
+    if (goDesk) {
+      a.tx = desks[name].x;
+      a.ty = desks[name].y;
+      setSpeech(a, pick(lines[name].work));
+    } else if (name === 'phantom' && Math.random() < 0.28) {
+      // Phantom visits Agency door
       a.state = 'visit';
-      a.visiting = true;
-      a.timer = Date.now() + randInt(8, 25) * 1000;
-      a.targetX = 5; // walk to door (right edge)
+      a.tx = 92; a.ty = desks.phantom.y;
+      a.timer = Date.now() + randI(8, 22) * 1000;
+      setSpeech(a, pick(lines.phantom.visit));
+    } else {
+      a.tx = rand(bounds.xMin, bounds.xMax);
+      a.ty = rand(bounds.yMin, bounds.yMax);
+      setSpeech(a, pick(lines[name].walk));
     }
-
-    setSpeech(a, pick(lines[name][isWork ? 'work' : (a.state === 'visit' ? 'visit' : 'walk')]));
+    a.moving = true;
   }
 
-  let lastTick = 0;
+  function init() {
+    for (const [name, a] of Object.entries(agents)) {
+      a.el     = document.getElementById('agent-' + name);
+      if (!a.el) continue;
+      a.sprite = a.el.querySelector('.sprite');
+      a.bubble = a.el.querySelector('.speech-bubble');
+      a.el.style.position = 'absolute';
+      a.el.style.zIndex   = '5';
+      setPos(name);
+      setWalking(a, false);
+      setSpeech(a, pick(lines[name].work));
+    }
+    setInterval(tick, 80);
+  }
+
+  let last = 0;
   function tick() {
     const now = Date.now();
-    const dt = Math.min(now - lastTick, 200);
-    lastTick = now;
+    const dt  = Math.min(now - last, 150) / 1000;
+    last = now;
+    const spd = 22; // % per second
 
     for (const [name, a] of Object.entries(agents)) {
       if (!a.el) continue;
 
-      const spd = 30; // px or % per second
-      const move = spd * dt / 1000;
+      if (a.moving) {
+        const dx = a.tx - a.x;
+        const dy = a.ty - a.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
 
-      if (a.targetX !== undefined) {
-        const cur = a.x !== null ? a.x : a.rightX;
-        const diff = a.targetX - cur;
-        if (Math.abs(diff) < 2) {
-          // Arrived
-          a.x = a.targetX;
-          if (name === 'nora') a.rightX = a.x;
-          setPos(a, name);
-          delete a.targetX;
+        if (dist < 1.2) {
+          a.x = a.tx; a.y = a.ty;
+          a.moving = false;
           setWalking(a, false);
-
-          if (a.state === 'visit') {
-            // Phantom arrived at Agency door — show visiting speech
-            setSpeech(a, pick(lines.phantom.visit));
-            a.state = 'visiting';
-          }
+          setPos(name);
+          if (a.state === 'visit') setSpeech(a, pick(lines.phantom.visit));
         } else {
-          const step = Math.sign(diff) * Math.min(move, Math.abs(diff));
-          a.x = (a.x !== null ? a.x : a.rightX) + step;
-          if (name === 'nora') a.rightX = a.x;
-          a.dir = step > 0 ? 1 : -1;
-          // For right-anchored, moving right means going LEFT on screen
-          flipSprite(a, (name === 'phantom' || name === 'nora') ? -a.dir : a.dir);
+          const step = Math.min(spd * dt, dist);
+          a.x += (dx / dist) * step;
+          a.y += (dy / dist) * step;
+          // flip sprite based on horizontal direction
+          if (a.sprite) a.sprite.style.transform = dx < 0 ? 'scaleX(-1)' : 'scaleX(1)';
           setWalking(a, true);
-          setPos(a, name);
+          setPos(name);
         }
       }
 
-      // State timer expired → schedule next action
-      if (now > a.timer && a.targetX === undefined) {
+      // Timer expired and not currently walking to a target
+      if (!a.moving && now > a.timer) {
         scheduleNext(name, a);
       }
     }
   }
 
-  // Start once DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    setTimeout(init, 500);
+    setTimeout(init, 600);
   }
 })();
 
