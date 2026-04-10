@@ -208,119 +208,175 @@ body {
 .badge-live .blink { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 1.5s infinite; }
 
 /* ═══════════════════════════════════════════════════
-   VIRTUAL OFFICE VIEW
+   VIRTUAL OFFICE VIEW — POKEMON PIXEL STYLE
    ═══════════════════════════════════════════════════ */
 .virtual-office {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 16px;
-  max-width: 1200px;
+  gap: 4px;
+  max-width: 1100px;
   margin: 0 auto;
+  background: #000;
+  border: 4px solid #3d8fa0;
+  box-shadow: 0 0 40px rgba(61,143,160,0.35), 0 0 80px rgba(61,143,160,0.12);
+  image-rendering: pixelated;
 }
 .room {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
   position: relative;
+  min-height: 300px;
+  padding: 0;
+  border-radius: 0;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: border-color 0.2s;
+  border: 2px solid #1e4a5a;
 }
-.room:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-.room::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  border-radius: 12px 12px 0 0;
+.room:hover { border-color: #3d8fa0; transform: none; }
+.room::before { display: none; }
+.room-bridge {
+  background: #0d1520;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(61,143,160,0.04) 15px, rgba(61,143,160,0.04) 16px), repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(61,143,160,0.04) 15px, rgba(61,143,160,0.04) 16px);
 }
-.room-bridge::before { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
-.room-bridge { grid-column: 1 / -1; }
-.room-research::before { background: var(--green); }
-.room-creative::before { background: var(--pink); }
-.room-war::before { background: var(--cyan); }
-.room-launch::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
+.room-war {
+  background: #0a0e20;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(6,182,212,0.04) 15px, rgba(6,182,212,0.04) 16px), repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(6,182,212,0.04) 15px, rgba(6,182,212,0.04) 16px);
+}
+.room-research {
+  background: #091510;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(34,197,94,0.04) 15px, rgba(34,197,94,0.04) 16px), repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(34,197,94,0.04) 15px, rgba(34,197,94,0.04) 16px);
+}
+.room-creative {
+  background: #160920;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(236,72,153,0.04) 15px, rgba(236,72,153,0.04) 16px), repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(236,72,153,0.04) 15px, rgba(236,72,153,0.04) 16px);
+}
+.room-launch { background: #1a0e09; }
 
 .room-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.75);
+  border-bottom: 2px solid #1e4a5a;
+  margin-bottom: 0;
 }
 .room-name {
   font-family: 'Press Start 2P', monospace;
-  font-size: 11px; color: var(--text-muted);
-  letter-spacing: 1px;
+  font-size: 8px; color: #4dd9e8;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(77,217,232,0.6);
 }
-.room-status { font-size: 10px; color: var(--green); display: flex; align-items: center; gap: 4px; }
-.room-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s infinite; }
+.room-status { font-family: 'Press Start 2P', monospace; font-size: 6px; color: #4ade80; display: flex; align-items: center; gap: 4px; }
+.room-status .dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 2s infinite; }
 
-.room-agents { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-end; }
-.room-agent {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+.room-agents {
   position: relative;
+  min-height: 240px;
+  padding: 16px;
+}
+.room-agent {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  z-index: 2;
 }
 .agent-name-tag {
-  font-size: 11px; font-weight: 700; color: #fff;
-  padding: 2px 8px; border-radius: 4px;
-  background: rgba(0,0,0,0.5);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: #fff;
+  padding: 2px 5px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 0;
+  text-shadow: 1px 1px 0 #000;
+  white-space: nowrap;
 }
 .speech-bubble {
   position: relative;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 10px; color: var(--text-muted);
-  max-width: 180px;
-  margin-top: 4px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 2px;
+  padding: 4px 7px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px; color: #999;
+  max-width: 150px;
+  margin-top: 3px;
+  line-height: 2;
 }
 .speech-bubble::before {
-  content: ''; position: absolute; top: -5px; left: 20px;
-  width: 8px; height: 8px;
-  background: rgba(255,255,255,0.06);
-  border-left: 1px solid var(--border);
-  border-top: 1px solid var(--border);
+  content: ''; position: absolute; top: -5px; left: 14px;
+  width: 6px; height: 6px;
+  background: rgba(0,0,0,0.85);
+  border-left: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255,255,255,0.15);
   transform: rotate(45deg);
 }
 
-/* Pixel character body using CSS */
+/* Pixel character — Pokemon trainer style */
 .pixel-char {
-  width: 48px; height: 56px;
+  width: 56px; height: 68px;
   position: relative;
   image-rendering: pixelated;
 }
 .pixel-char .head {
-  width: 24px; height: 24px; border-radius: 6px;
+  width: 28px; height: 28px; border-radius: 3px;
   margin: 0 auto;
   position: relative;
+  border: 2px solid rgba(0,0,0,0.5);
 }
 .pixel-char .head .eyes {
-  position: absolute; bottom: 6px; left: 50%;
+  position: absolute; bottom: 7px; left: 50%;
   transform: translateX(-50%);
-  display: flex; gap: 6px;
+  display: flex; gap: 7px;
 }
 .pixel-char .head .eyes span {
-  width: 4px; height: 4px; background: #fff; border-radius: 1px;
+  width: 5px; height: 5px; background: #fff; border-radius: 0;
+  display: block;
+  box-shadow: 0 0 3px rgba(255,255,255,0.5);
 }
 .pixel-char .body {
-  width: 28px; height: 18px; border-radius: 4px 4px 2px 2px;
+  width: 32px; height: 22px; border-radius: 2px 2px 0 0;
   margin: 2px auto 0;
+  border: 2px solid rgba(0,0,0,0.4);
 }
 .pixel-char .legs {
   display: flex; gap: 4px; justify-content: center;
-  margin-top: 2px;
+  margin-top: 0;
 }
 .pixel-char .legs span {
-  width: 10px; height: 10px; border-radius: 2px;
+  width: 12px; height: 14px; border-radius: 0 0 2px 2px;
+  border: 2px solid rgba(0,0,0,0.4);
 }
+
+/* Pixel desk */
+.pixel-desk {
+  position: absolute;
+  width: 72px; height: 20px;
+  background: #7c5c38;
+  border-top: 3px solid #9a7448;
+  border-left: 3px solid #9a7448;
+  border-right: 3px solid #4a3520;
+  border-bottom: 3px solid #4a3520;
+  z-index: 1;
+}
+
+/* Pixel plants */
+.pixel-plant {
+  position: absolute;
+  font-size: 24px;
+  z-index: 1;
+  filter: saturate(2) brightness(1.2);
+  line-height: 1;
+  pointer-events: none;
+}
+.pixel-plant.tl { top: 50px; left: 8px; }
+.pixel-plant.tr { top: 50px; right: 8px; }
+.pixel-plant.bl { bottom: 8px; left: 8px; }
+.pixel-plant.br { bottom: 8px; right: 8px; }
 
 /* Floor tiles */
 .room-floor {
   background-image:
-    linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.02) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.02) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-  padding: 20px; border-radius: 8px; margin-top: 8px;
+    repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(255,255,255,0.02) 15px, rgba(255,255,255,0.02) 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(255,255,255,0.02) 15px, rgba(255,255,255,0.02) 16px);
+  padding: 0;
+  border-radius: 0;
+  margin-top: 0;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -744,94 +800,114 @@ body {
   <!-- ─── VIRTUAL OFFICE ─── -->
   <section class="view active" id="view-virtual-office">
     <div class="virtual-office">
-      <!-- The Bridge -->
+
+      <!-- THE BRIDGE (Joseph + Phantom) -->
       <div class="room room-bridge room-floor">
         <div class="room-header">
           <span class="room-name">🌌 THE BRIDGE</span>
           <span class="room-status"><span class="dot"></span> ACTIVE</span>
         </div>
         <div class="room-agents">
-          <div class="room-agent">
-            <span class="agent-name-tag" style="color:var(--gold)">👑 Joseph</span>
+          <!-- Desks -->
+          <div class="pixel-desk" style="left:30px;bottom:40px;"></div>
+          <div class="pixel-desk" style="right:30px;bottom:40px;"></div>
+          <!-- Plants -->
+          <div class="pixel-plant tl">🌿</div>
+          <div class="pixel-plant tr">🌿</div>
+          <div class="pixel-plant bl">🪴</div>
+          <div class="pixel-plant br">🪴</div>
+          <!-- Joseph -->
+          <div class="room-agent" style="left:42px;bottom:68px;">
+            <span class="agent-name-tag" style="color:#f59e0b;">👑 Joseph</span>
             <div class="pixel-char">
-              <div class="head" style="background:linear-gradient(135deg,#92400e,var(--gold))"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:linear-gradient(135deg,#78350f,#b45309)"></div>
-              <div class="legs"><span style="background:#78350f"></span><span style="background:#78350f"></span></div>
+              <div class="head" style="background:#b45309;"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:#92400e;"></div>
+              <div class="legs"><span style="background:#78350f;"></span><span style="background:#78350f;"></span></div>
             </div>
-            <div class="speech-bubble">Reviewing daily priorities...</div>
+            <div class="speech-bubble">Reviewing priorities...</div>
           </div>
-          <div class="room-agent">
-            <span class="agent-name-tag" style="color:var(--purple)">👻 Phantom</span>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <div class="pixel-char">
-                <div class="head" style="background:linear-gradient(135deg,#4c1d95,var(--purple));box-shadow:0 0 12px var(--purple-glow)"><div class="eyes"><span></span><span></span></div></div>
-                <div class="body" style="background:linear-gradient(135deg,#3b0764,#6d28d9)"></div>
-                <div class="legs"><span style="background:#3b0764"></span><span style="background:#3b0764"></span></div>
-              </div>
+          <!-- Phantom -->
+          <div class="room-agent" style="right:42px;bottom:68px;">
+            <span class="agent-name-tag" style="color:#a78bfa;">👻 Phantom</span>
+            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #7c3aed);">
+              <div class="head" style="background:#6d28d9;"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:#4c1d95;"></div>
+              <div class="legs"><span style="background:#3b0764;"></span><span style="background:#3b0764;"></span></div>
             </div>
             <span class="badge-live"><span class="blink"></span>LIVE</span>
-            <div class="speech-bubble">Delegating morning tasks to all agents...</div>
+            <div class="speech-bubble">Running tasks...</div>
           </div>
         </div>
       </div>
 
-      <!-- Research Lab -->
-      <div class="room room-research room-floor">
-        <div class="room-header">
-          <span class="room-name">🔬 RESEARCH LAB</span>
-          <span class="room-status"><span class="dot"></span> ACTIVE</span>
-        </div>
-        <div class="room-agents">
-          <div class="room-agent">
-            <span class="agent-name-tag" style="color:var(--green)">🔍 Remi</span>
-            <div class="pixel-char">
-              <div class="head" style="background:linear-gradient(135deg,#14532d,var(--green))"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:linear-gradient(135deg,#15803d,#16a34a)"></div>
-              <div class="legs"><span style="background:#15803d"></span><span style="background:#15803d"></span></div>
-            </div>
-            <div class="speech-bubble">Scanning Twitter for viral hooks...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Creative Studio -->
-      <div class="room room-creative room-floor">
-        <div class="room-header">
-          <span class="room-name">🎨 CREATIVE STUDIO</span>
-          <span class="room-status"><span class="dot"></span> ACTIVE</span>
-        </div>
-        <div class="room-agents">
-          <div class="room-agent">
-            <span class="agent-name-tag" style="color:var(--pink)">✨ Nora</span>
-            <div class="pixel-char">
-              <div class="head" style="background:linear-gradient(135deg,#831843,var(--pink))"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:linear-gradient(135deg,#9d174d,#db2777)"></div>
-              <div class="legs"><span style="background:#9d174d"></span><span style="background:#9d174d"></span></div>
-            </div>
-            <div class="speech-bubble">Drafting 3 YouTube hook concepts...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- War Room -->
+      <!-- WAR ROOM (Chief) -->
       <div class="room room-war room-floor">
         <div class="room-header">
           <span class="room-name">⚔️ WAR ROOM</span>
           <span class="room-status"><span class="dot"></span> ACTIVE</span>
         </div>
         <div class="room-agents">
-          <div class="room-agent">
-            <span class="agent-name-tag" style="color:var(--cyan)">🎯 Chief</span>
-            <div class="pixel-char">
-              <div class="head" style="background:linear-gradient(135deg,#164e63,var(--cyan))"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:linear-gradient(135deg,#0e7490,#06b6d4)"></div>
-              <div class="legs"><span style="background:#0e7490"></span><span style="background:#0e7490"></span></div>
+          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
+          <div class="pixel-plant tl">🌱</div>
+          <div class="pixel-plant br">🪴</div>
+          <!-- Chief -->
+          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+            <span class="agent-name-tag" style="color:#22d3ee;">🎯 Chief</span>
+            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #06b6d4);">
+              <div class="head" style="background:#0e7490;"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:#164e63;"></div>
+              <div class="legs"><span style="background:#0c4a6e;"></span><span style="background:#0c4a6e;"></span></div>
             </div>
-            <div class="speech-bubble">Coordinating client deliverables...</div>
+            <div class="speech-bubble">Coordinating clients...</div>
           </div>
         </div>
       </div>
 
+      <!-- RESEARCH LAB (Remi) -->
+      <div class="room room-research room-floor">
+        <div class="room-header">
+          <span class="room-name">🔬 RESEARCH LAB</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
+          <div class="pixel-plant tl">🌿</div>
+          <div class="pixel-plant br">🌱</div>
+          <!-- Remi -->
+          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+            <span class="agent-name-tag" style="color:#4ade80;">🔍 Remi</span>
+            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #22c55e);">
+              <div class="head" style="background:#15803d;"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:#14532d;"></div>
+              <div class="legs"><span style="background:#166534;"></span><span style="background:#166534;"></span></div>
+            </div>
+            <div class="speech-bubble">Scanning for trends...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREATIVE STUDIO (Nora) -->
+      <div class="room room-creative room-floor">
+        <div class="room-header">
+          <span class="room-name">🎨 CREATIVE STUDIO</span>
+          <span class="room-status"><span class="dot"></span> ACTIVE</span>
+        </div>
+        <div class="room-agents">
+          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
+          <div class="pixel-plant tl">🌸</div>
+          <div class="pixel-plant br">🪴</div>
+          <!-- Nora -->
+          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+            <span class="agent-name-tag" style="color:#f472b6;">✨ Nora</span>
+            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #ec4899);">
+              <div class="head" style="background:#db2777;"><div class="eyes"><span></span><span></span></div></div>
+              <div class="body" style="background:#9d174d;"></div>
+              <div class="legs"><span style="background:#831843;"></span><span style="background:#831843;"></span></div>
+            </div>
+            <div class="speech-bubble">Writing hook concepts...</div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </section>
