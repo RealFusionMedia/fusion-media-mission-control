@@ -307,67 +307,250 @@ body {
   transform: rotate(45deg);
 }
 
-/* Pixel character — Pokemon trainer style */
-.pixel-char {
-  width: 56px; height: 68px;
+/* ── Pokemon Trainer Sprite (pure CSS, pixel-perfect) ── */
+.trainer {
+  width: 48px;
   position: relative;
   image-rendering: pixelated;
+  display: flex; flex-direction: column; align-items: center;
 }
-.pixel-char .head {
-  width: 28px; height: 28px; border-radius: 3px;
+/* Hat */
+.trainer .hat {
+  width: 26px; height: 8px;
+  border-radius: 3px 3px 0 0;
   margin: 0 auto;
   position: relative;
-  border: 2px solid rgba(0,0,0,0.5);
+  z-index: 2;
 }
-.pixel-char .head .eyes {
-  position: absolute; bottom: 7px; left: 50%;
+.trainer .hat::after {
+  content: '';
+  position: absolute; bottom: -2px; left: -4px; right: -4px; height: 4px;
+  background: inherit;
+  filter: brightness(0.75);
+  border-radius: 1px;
+}
+/* Head */
+.trainer .head {
+  width: 24px; height: 22px;
+  background: #e8b47a;
+  border: 2px solid #000;
+  border-radius: 3px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.trainer .head::before {
+  /* hair peek under hat */
+  content: '';
+  position: absolute; top: -3px; left: 0; right: 0; height: 5px;
+  border-radius: 2px 2px 0 0;
+  background: inherit;
+  filter: brightness(0.6);
+}
+.trainer .eyes {
+  position: absolute; bottom: 6px; left: 50%;
   transform: translateX(-50%);
-  display: flex; gap: 7px;
+  display: flex; gap: 6px;
 }
-.pixel-char .head .eyes span {
-  width: 5px; height: 5px; background: #fff; border-radius: 0;
+.trainer .eyes span {
+  width: 4px; height: 5px;
+  background: #1a1a2e;
+  border-radius: 0 0 2px 2px;
   display: block;
-  box-shadow: 0 0 3px rgba(255,255,255,0.5);
 }
-.pixel-char .body {
-  width: 32px; height: 22px; border-radius: 2px 2px 0 0;
-  margin: 2px auto 0;
-  border: 2px solid rgba(0,0,0,0.4);
+.trainer .mouth {
+  position: absolute; bottom: 3px; left: 50%;
+  transform: translateX(-50%);
+  width: 8px; height: 2px;
+  background: #c0765a;
+  border-radius: 1px;
 }
-.pixel-char .legs {
-  display: flex; gap: 4px; justify-content: center;
-  margin-top: 0;
+/* Body / torso */
+.trainer .torso {
+  width: 26px; height: 20px;
+  border: 2px solid #000;
+  margin: 1px auto 0;
+  position: relative;
+  z-index: 2;
+  border-radius: 2px 2px 0 0;
 }
-.pixel-char .legs span {
-  width: 12px; height: 14px; border-radius: 0 0 2px 2px;
-  border: 2px solid rgba(0,0,0,0.4);
+.trainer .torso::after {
+  /* belt line */
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 5px;
+  background: rgba(0,0,0,0.3);
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
+/* Arms */
+.trainer .arms {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+.trainer .arm-l, .trainer .arm-r {
+  position: absolute; top: 2px;
+  width: 10px; height: 16px;
+  border: 2px solid #000;
+  border-radius: 2px;
+}
+.trainer .arm-l { left: -10px; border-radius: 3px 2px 2px 3px; }
+.trainer .arm-r { right: -10px; border-radius: 2px 3px 3px 2px; }
+/* Belt */
+.trainer .belt {
+  width: 26px; height: 7px;
+  border: 2px solid #000;
+  margin: 0 auto;
+  position: relative; z-index: 2;
+  background: #2a2a2a;
+}
+.trainer .belt::after {
+  content: '';
+  position: absolute; top: 1px; left: 50%; transform: translateX(-50%);
+  width: 7px; height: 5px;
+  background: #888; border: 1px solid #000; border-radius: 1px;
+}
+/* Legs */
+.trainer .legs {
+  display: flex; gap: 3px;
+  margin: 0 auto;
+  position: relative; z-index: 2;
+}
+.trainer .leg {
+  width: 11px; height: 16px;
+  border: 2px solid #000;
+  border-radius: 0 0 2px 2px;
+}
+/* Shoes */
+.trainer .shoes {
+  display: flex; gap: 1px;
+  margin: 0 auto;
+  position: relative; z-index: 2;
+}
+.trainer .shoe {
+  width: 13px; height: 6px;
+  border: 2px solid #000;
+  border-radius: 0 0 3px 2px;
+  background: #1a1a1a;
+}
+.trainer .shoe:first-child { border-radius: 0 0 2px 3px; }
 
-/* Pixel desk */
+/* Pixel desk — isometric style */
 .pixel-desk {
   position: absolute;
-  width: 72px; height: 20px;
-  background: #7c5c38;
-  border-top: 3px solid #9a7448;
-  border-left: 3px solid #9a7448;
-  border-right: 3px solid #4a3520;
-  border-bottom: 3px solid #4a3520;
   z-index: 1;
+}
+.pixel-desk .desk-top {
+  width: 76px; height: 14px;
+  background: #a07850;
+  border: 2px solid #000;
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.15);
+}
+.pixel-desk .desk-front {
+  width: 76px; height: 10px;
+  background: #7c5c38;
+  border: 2px solid #000;
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+}
+.pixel-desk .desk-item {
+  position: absolute; top: -10px;
+  font-size: 12px; line-height: 1;
+  filter: saturate(2);
 }
 
-/* Pixel plants */
+/* Pixel shelf */
+.pixel-shelf {
+  position: absolute;
+  z-index: 1;
+}
+.pixel-shelf .shelf-back {
+  width: 60px; height: 40px;
+  background: #4a3820;
+  border: 2px solid #000;
+  display: flex; flex-direction: column; justify-content: space-around;
+  padding: 2px 4px;
+  gap: 2px;
+}
+.pixel-shelf .shelf-row {
+  display: flex; gap: 2px; align-items: flex-end;
+}
+.shelf-book {
+  width: 7px; height: 14px;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 1px 1px 0 0;
+  display: inline-block;
+}
+.shelf-book.h { height: 10px; }
+.shelf-book.xl { width: 9px; height: 16px; }
+
+/* Pixel computer monitor */
+.pixel-monitor {
+  position: absolute; z-index: 3;
+}
+.pixel-monitor .mon-screen {
+  width: 30px; height: 20px;
+  background: #1a2a4a;
+  border: 3px solid #333;
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.pixel-monitor .mon-screen::after {
+  content: '';
+  position: absolute; inset: 2px;
+  background: repeating-linear-gradient(0deg, rgba(0,255,150,0.08), rgba(0,255,150,0.08) 1px, transparent 1px, transparent 3px);
+  animation: scanline 3s linear infinite;
+}
+.pixel-monitor .mon-stand {
+  width: 10px; height: 6px;
+  background: #333;
+  border: 2px solid #000;
+  margin: 0 auto;
+}
+.pixel-monitor .mon-base {
+  width: 22px; height: 4px;
+  background: #444;
+  border: 2px solid #000;
+  border-radius: 1px;
+  margin: 0 auto;
+}
+
+/* Pixel plant (CSS drawn) */
 .pixel-plant {
   position: absolute;
-  font-size: 24px;
   z-index: 1;
-  filter: saturate(2) brightness(1.2);
-  line-height: 1;
   pointer-events: none;
+  display: flex; flex-direction: column; align-items: center;
 }
-.pixel-plant.tl { top: 50px; left: 8px; }
-.pixel-plant.tr { top: 50px; right: 8px; }
-.pixel-plant.bl { bottom: 8px; left: 8px; }
-.pixel-plant.br { bottom: 8px; right: 8px; }
+.plant-leaves {
+  font-size: 20px; line-height: 1;
+  filter: saturate(2.5) brightness(1.1);
+}
+.plant-pot {
+  width: 18px; height: 12px;
+  background: #8b4513;
+  border: 2px solid #000;
+  border-top: none;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+  margin-top: -2px;
+}
+.pixel-plant.tl { top: 45px; left: 6px; }
+.pixel-plant.tr { top: 45px; right: 6px; }
+.pixel-plant.bl { bottom: 6px; left: 6px; }
+.pixel-plant.br { bottom: 6px; right: 6px; }
+.pixel-plant.mid-l { top: 50%; left: 6px; transform: translateY(-50%); }
+.pixel-plant.mid-r { top: 50%; right: 6px; transform: translateY(-50%); }
+
+@keyframes scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 30px; }
+}
 
 /* Floor tiles */
 .room-floor {
@@ -799,113 +982,285 @@ body {
 
   <!-- ─── VIRTUAL OFFICE ─── -->
   <section class="view active" id="view-virtual-office">
-    <div class="virtual-office">
+    <div class="virtual-office" style="grid-template-columns:1fr 1fr;grid-template-rows:auto auto;">
 
-      <!-- THE BRIDGE (Joseph + Phantom) -->
-      <div class="room room-bridge room-floor">
+      <!-- ══ THE BRIDGE (Joseph + Phantom) ══ -->
+      <div class="room room-bridge room-floor" style="min-height:340px;">
         <div class="room-header">
           <span class="room-name">🌌 THE BRIDGE</span>
           <span class="room-status"><span class="dot"></span> ACTIVE</span>
         </div>
-        <div class="room-agents">
-          <!-- Desks -->
-          <div class="pixel-desk" style="left:30px;bottom:40px;"></div>
-          <div class="pixel-desk" style="right:30px;bottom:40px;"></div>
-          <!-- Plants -->
-          <div class="pixel-plant tl">🌿</div>
-          <div class="pixel-plant tr">🌿</div>
-          <div class="pixel-plant bl">🪴</div>
-          <div class="pixel-plant br">🪴</div>
-          <!-- Joseph -->
-          <div class="room-agent" style="left:42px;bottom:68px;">
-            <span class="agent-name-tag" style="color:#f59e0b;">👑 Joseph</span>
-            <div class="pixel-char">
-              <div class="head" style="background:#b45309;"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:#92400e;"></div>
-              <div class="legs"><span style="background:#78350f;"></span><span style="background:#78350f;"></span></div>
+        <div class="room-agents" style="min-height:290px;">
+
+          <!-- shelf top-left -->
+          <div class="pixel-shelf" style="top:8px;left:8px;">
+            <div class="shelf-back">
+              <div class="shelf-row">
+                <span class="shelf-book xl" style="background:#7c3aed;"></span>
+                <span class="shelf-book" style="background:#06b6d4;"></span>
+                <span class="shelf-book h" style="background:#f59e0b;"></span>
+                <span class="shelf-book" style="background:#ec4899;"></span>
+                <span class="shelf-book xl" style="background:#22c55e;"></span>
+              </div>
+              <div class="shelf-row">
+                <span class="shelf-book h" style="background:#ef4444;"></span>
+                <span class="shelf-book xl" style="background:#a78bfa;"></span>
+                <span class="shelf-book" style="background:#f97316;"></span>
+                <span class="shelf-book h" style="background:#06b6d4;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- plant top-right -->
+          <div class="pixel-plant tr">
+            <div class="plant-leaves">🌿</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- Joseph desk left -->
+          <div class="pixel-desk" style="left:20px;bottom:36px;">
+            <div class="desk-top"><span class="desk-item" style="left:4px;">☕</span><span class="desk-item" style="right:4px;">📋</span></div>
+            <div class="desk-front"></div>
+          </div>
+
+          <!-- Phantom desk right -->
+          <div class="pixel-desk" style="right:20px;bottom:36px;">
+            <div class="desk-top"><span class="desk-item" style="left:4px;">💻</span><span class="desk-item" style="right:4px;">⚡</span></div>
+            <div class="desk-front"></div>
+          </div>
+
+          <!-- monitor on phantom desk -->
+          <div class="pixel-monitor" style="right:28px;bottom:72px;">
+            <div class="mon-screen">📊</div>
+            <div class="mon-stand"></div>
+            <div class="mon-base"></div>
+          </div>
+
+          <!-- plant bottom-left -->
+          <div class="pixel-plant bl">
+            <div class="plant-leaves">🪴</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- plant bottom-right -->
+          <div class="pixel-plant br">
+            <div class="plant-leaves">🌱</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- Joseph trainer -->
+          <div class="room-agent" style="left:32px;bottom:68px;">
+            <span class="agent-name-tag" style="color:#fbbf24;">👑 Joseph</span>
+            <div class="trainer">
+              <div class="hat" style="background:#92400e;"></div>
+              <div class="head" style="background:#e8b47a;">
+                <div class="eyes"><span></span><span></span></div>
+                <div class="mouth"></div>
+              </div>
+              <div class="torso" style="background:#b45309;position:relative;">
+                <div class="arms">
+                  <div class="arm-l" style="background:#b45309;"></div>
+                  <div class="arm-r" style="background:#b45309;"></div>
+                </div>
+              </div>
+              <div class="belt" style="background:#78350f;"></div>
+              <div class="legs">
+                <div class="leg" style="background:#92400e;"></div>
+                <div class="leg" style="background:#92400e;"></div>
+              </div>
+              <div class="shoes">
+                <div class="shoe" style="background:#1c0a00;"></div>
+                <div class="shoe" style="background:#1c0a00;"></div>
+              </div>
             </div>
             <div class="speech-bubble">Reviewing priorities...</div>
           </div>
-          <!-- Phantom -->
-          <div class="room-agent" style="right:42px;bottom:68px;">
+
+          <!-- Phantom trainer -->
+          <div class="room-agent" style="right:32px;bottom:68px;">
             <span class="agent-name-tag" style="color:#a78bfa;">👻 Phantom</span>
-            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #7c3aed);">
-              <div class="head" style="background:#6d28d9;"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:#4c1d95;"></div>
-              <div class="legs"><span style="background:#3b0764;"></span><span style="background:#3b0764;"></span></div>
+            <div class="trainer" style="filter:drop-shadow(0 0 6px #7c3aed);">
+              <div class="hat" style="background:#4c1d95;"></div>
+              <div class="head" style="background:#c4b5fd;">
+                <div class="eyes"><span style="background:#4c1d95;"></span><span style="background:#4c1d95;"></span></div>
+                <div class="mouth" style="background:#7c3aed;"></div>
+              </div>
+              <div class="torso" style="background:#6d28d9;position:relative;">
+                <div class="arms">
+                  <div class="arm-l" style="background:#6d28d9;"></div>
+                  <div class="arm-r" style="background:#6d28d9;"></div>
+                </div>
+              </div>
+              <div class="belt" style="background:#3b0764;"></div>
+              <div class="legs">
+                <div class="leg" style="background:#4c1d95;"></div>
+                <div class="leg" style="background:#4c1d95;"></div>
+              </div>
+              <div class="shoes">
+                <div class="shoe" style="background:#2e1065;"></div>
+                <div class="shoe" style="background:#2e1065;"></div>
+              </div>
             </div>
-            <span class="badge-live"><span class="blink"></span>LIVE</span>
+            <span class="badge-live" style="margin-top:2px;"><span class="blink"></span>LIVE</span>
             <div class="speech-bubble">Running tasks...</div>
           </div>
+
         </div>
       </div>
 
-      <!-- WAR ROOM (Chief) -->
-      <div class="room room-war room-floor">
+      <!-- ══ AGENCY (Chief + Remi + Nora) ══ -->
+      <div class="room room-war room-floor" style="min-height:340px;background:#090e1a;background-image:repeating-linear-gradient(0deg,transparent,transparent 15px,rgba(6,182,212,0.03) 15px,rgba(6,182,212,0.03) 16px),repeating-linear-gradient(90deg,transparent,transparent 15px,rgba(6,182,212,0.03) 15px,rgba(6,182,212,0.03) 16px);">
         <div class="room-header">
-          <span class="room-name">⚔️ WAR ROOM</span>
+          <span class="room-name">🏢 AGENCY</span>
           <span class="room-status"><span class="dot"></span> ACTIVE</span>
         </div>
-        <div class="room-agents">
-          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
-          <div class="pixel-plant tl">🌱</div>
-          <div class="pixel-plant br">🪴</div>
-          <!-- Chief -->
-          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+        <div class="room-agents" style="min-height:290px;">
+
+          <!-- shelf top-right -->
+          <div class="pixel-shelf" style="top:8px;right:8px;">
+            <div class="shelf-back">
+              <div class="shelf-row">
+                <span class="shelf-book xl" style="background:#06b6d4;"></span>
+                <span class="shelf-book h" style="background:#22c55e;"></span>
+                <span class="shelf-book" style="background:#ec4899;"></span>
+                <span class="shelf-book xl" style="background:#f59e0b;"></span>
+              </div>
+              <div class="shelf-row">
+                <span class="shelf-book" style="background:#7c3aed;"></span>
+                <span class="shelf-book h" style="background:#06b6d4;"></span>
+                <span class="shelf-book xl" style="background:#22c55e;"></span>
+                <span class="shelf-book" style="background:#ef4444;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- plant top-left -->
+          <div class="pixel-plant tl">
+            <div class="plant-leaves">🌿</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- Chief desk center-top -->
+          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:140px;">
+            <div class="desk-top"><span class="desk-item" style="left:4px;">📱</span><span class="desk-item" style="right:4px;">📊</span></div>
+            <div class="desk-front"></div>
+          </div>
+
+          <!-- monitor on chief desk -->
+          <div class="pixel-monitor" style="left:50%;transform:translateX(-26px);bottom:178px;">
+            <div class="mon-screen">📡</div>
+            <div class="mon-stand"></div>
+            <div class="mon-base"></div>
+          </div>
+
+          <!-- Remi desk bottom-left -->
+          <div class="pixel-desk" style="left:12px;bottom:36px;">
+            <div class="desk-top"><span class="desk-item" style="left:4px;">🔍</span><span class="desk-item" style="right:4px;">📰</span></div>
+            <div class="desk-front"></div>
+          </div>
+
+          <!-- Nora desk bottom-right -->
+          <div class="pixel-desk" style="right:12px;bottom:36px;">
+            <div class="desk-top"><span class="desk-item" style="left:4px;">✏️</span><span class="desk-item" style="right:4px;">💡</span></div>
+            <div class="desk-front"></div>
+          </div>
+
+          <!-- plant bottom-left -->
+          <div class="pixel-plant bl">
+            <div class="plant-leaves">🌸</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- plant bottom-right -->
+          <div class="pixel-plant br">
+            <div class="plant-leaves">🪴</div>
+            <div class="plant-pot"></div>
+          </div>
+
+          <!-- Chief trainer (center top) -->
+          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:172px;">
             <span class="agent-name-tag" style="color:#22d3ee;">🎯 Chief</span>
-            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #06b6d4);">
-              <div class="head" style="background:#0e7490;"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:#164e63;"></div>
-              <div class="legs"><span style="background:#0c4a6e;"></span><span style="background:#0c4a6e;"></span></div>
+            <div class="trainer" style="filter:drop-shadow(0 0 6px #06b6d4);">
+              <div class="hat" style="background:#164e63;"></div>
+              <div class="head" style="background:#a5f3fc;">
+                <div class="eyes"><span style="background:#0e7490;"></span><span style="background:#0e7490;"></span></div>
+                <div class="mouth" style="background:#06b6d4;"></div>
+              </div>
+              <div class="torso" style="background:#0e7490;position:relative;">
+                <div class="arms">
+                  <div class="arm-l" style="background:#0e7490;"></div>
+                  <div class="arm-r" style="background:#0e7490;"></div>
+                </div>
+              </div>
+              <div class="belt" style="background:#164e63;"></div>
+              <div class="legs">
+                <div class="leg" style="background:#0e7490;"></div>
+                <div class="leg" style="background:#0e7490;"></div>
+              </div>
+              <div class="shoes">
+                <div class="shoe" style="background:#042f2e;"></div>
+                <div class="shoe" style="background:#042f2e;"></div>
+              </div>
             </div>
-            <div class="speech-bubble">Coordinating clients...</div>
+            <div class="speech-bubble">Running the agency...</div>
           </div>
-        </div>
-      </div>
 
-      <!-- RESEARCH LAB (Remi) -->
-      <div class="room room-research room-floor">
-        <div class="room-header">
-          <span class="room-name">🔬 RESEARCH LAB</span>
-          <span class="room-status"><span class="dot"></span> ACTIVE</span>
-        </div>
-        <div class="room-agents">
-          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
-          <div class="pixel-plant tl">🌿</div>
-          <div class="pixel-plant br">🌱</div>
-          <!-- Remi -->
-          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+          <!-- Remi trainer (bottom-left) -->
+          <div class="room-agent" style="left:24px;bottom:68px;">
             <span class="agent-name-tag" style="color:#4ade80;">🔍 Remi</span>
-            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #22c55e);">
-              <div class="head" style="background:#15803d;"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:#14532d;"></div>
-              <div class="legs"><span style="background:#166534;"></span><span style="background:#166534;"></span></div>
+            <div class="trainer" style="filter:drop-shadow(0 0 6px #22c55e);">
+              <div class="hat" style="background:#14532d;"></div>
+              <div class="head" style="background:#bbf7d0;">
+                <div class="eyes"><span style="background:#14532d;"></span><span style="background:#14532d;"></span></div>
+                <div class="mouth" style="background:#16a34a;"></div>
+              </div>
+              <div class="torso" style="background:#15803d;position:relative;">
+                <div class="arms">
+                  <div class="arm-l" style="background:#15803d;"></div>
+                  <div class="arm-r" style="background:#15803d;"></div>
+                </div>
+              </div>
+              <div class="belt" style="background:#14532d;"></div>
+              <div class="legs">
+                <div class="leg" style="background:#166534;"></div>
+                <div class="leg" style="background:#166534;"></div>
+              </div>
+              <div class="shoes">
+                <div class="shoe" style="background:#052e16;"></div>
+                <div class="shoe" style="background:#052e16;"></div>
+              </div>
             </div>
-            <div class="speech-bubble">Scanning for trends...</div>
+            <div class="speech-bubble">Scanning trends...</div>
           </div>
-        </div>
-      </div>
 
-      <!-- CREATIVE STUDIO (Nora) -->
-      <div class="room room-creative room-floor">
-        <div class="room-header">
-          <span class="room-name">🎨 CREATIVE STUDIO</span>
-          <span class="room-status"><span class="dot"></span> ACTIVE</span>
-        </div>
-        <div class="room-agents">
-          <div class="pixel-desk" style="left:50%;transform:translateX(-50%);bottom:40px;"></div>
-          <div class="pixel-plant tl">🌸</div>
-          <div class="pixel-plant br">🪴</div>
-          <!-- Nora -->
-          <div class="room-agent" style="left:50%;transform:translateX(-50%);bottom:68px;">
+          <!-- Nora trainer (bottom-right) -->
+          <div class="room-agent" style="right:24px;bottom:68px;">
             <span class="agent-name-tag" style="color:#f472b6;">✨ Nora</span>
-            <div class="pixel-char" style="filter:drop-shadow(0 0 8px #ec4899);">
-              <div class="head" style="background:#db2777;"><div class="eyes"><span></span><span></span></div></div>
-              <div class="body" style="background:#9d174d;"></div>
-              <div class="legs"><span style="background:#831843;"></span><span style="background:#831843;"></span></div>
+            <div class="trainer" style="filter:drop-shadow(0 0 6px #ec4899);">
+              <div class="hat" style="background:#831843;"></div>
+              <div class="head" style="background:#fce7f3;">
+                <div class="eyes"><span style="background:#9d174d;"></span><span style="background:#9d174d;"></span></div>
+                <div class="mouth" style="background:#db2777;"></div>
+              </div>
+              <div class="torso" style="background:#db2777;position:relative;">
+                <div class="arms">
+                  <div class="arm-l" style="background:#db2777;"></div>
+                  <div class="arm-r" style="background:#db2777;"></div>
+                </div>
+              </div>
+              <div class="belt" style="background:#831843;"></div>
+              <div class="legs">
+                <div class="leg" style="background:#9d174d;"></div>
+                <div class="leg" style="background:#9d174d;"></div>
+              </div>
+              <div class="shoes">
+                <div class="shoe" style="background:#500724;"></div>
+                <div class="shoe" style="background:#500724;"></div>
+              </div>
             </div>
-            <div class="speech-bubble">Writing hook concepts...</div>
+            <div class="speech-bubble">Writing hooks...</div>
           </div>
+
         </div>
       </div>
 
