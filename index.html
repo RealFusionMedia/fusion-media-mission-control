@@ -184,6 +184,7 @@ body {
 .avatar-chief { background: linear-gradient(135deg, #164e63, var(--cyan)); color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
 .avatar-remi { background: linear-gradient(135deg, #14532d, var(--green)); color: var(--green); box-shadow: 0 0 20px var(--green-glow); }
 .avatar-nora { background: linear-gradient(135deg, #831843, var(--pink)); color: var(--pink); box-shadow: 0 0 15px rgba(236,72,153,0.3); }
+.avatar-strategist { background: linear-gradient(135deg, #4c1d95, #a855f7); color: #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.3); }
 
 
 /* Status dot */
@@ -875,13 +876,7 @@ body {
   <button class="nav-tab" data-view="org-chart">Org Chart</button>
   <button class="nav-tab" data-view="agents">Agents</button>
   <button class="nav-tab" data-view="cron-jobs">Cron Jobs</button>
-  <button class="nav-tab" data-view="heartbeats">Heartbeats</button>
-  <button class="nav-tab" data-view="profiles">Profiles</button>
-  <button class="nav-tab" data-view="sub-agents">Sub-Agents</button>
-  <button class="nav-tab" data-view="logs">Logs</button>
   <button class="nav-tab" data-view="operating-centre">Operating Centre</button>
-  <button class="nav-tab" data-view="strategy">🧠 Strategy</button>
-  <button class="nav-tab" data-view="security">Security</button>
 </nav>
 
 <!-- Status Counter -->
@@ -1162,18 +1157,7 @@ body {
   <section class="view" id="view-cron-jobs">
     <div class="placeholder-view"><div class="icon">⏰</div><div class="title">Cron Jobs</div><div class="desc">Scheduled automations and recurring tasks — coming soon</div></div>
   </section>
-  <section class="view" id="view-heartbeats">
-    <div class="placeholder-view"><div class="icon">💓</div><div class="title">Heartbeats</div><div class="desc">Agent health monitoring and uptime tracking — coming soon</div></div>
-  </section>
-  <section class="view" id="view-profiles">
-    <div class="placeholder-view"><div class="icon">👤</div><div class="title">Profiles</div><div class="desc">Agent profiles and configuration — coming soon</div></div>
-  </section>
-  <section class="view" id="view-sub-agents">
-    <div class="placeholder-view"><div class="icon">🤖</div><div class="title">Sub-Agents</div><div class="desc">Nested agent management and delegation chains — coming soon</div></div>
-  </section>
-  <section class="view" id="view-logs">
-    <div class="placeholder-view"><div class="icon">📜</div><div class="title">Logs</div><div class="desc">System logs and agent activity history — coming soon</div></div>
-  </section>
+
   <section class="view" id="view-operating-centre">
     <div style="max-width:1200px;margin:0 auto;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
@@ -1432,6 +1416,12 @@ const agents = {
     avatarClass: 'avatar-nora', status: 'online', color: '#ec4899',
     responsibilities: ['Content ideation', 'Script frameworks', 'Hook writing', 'Thumbnail concepts', 'Content calendar'],
     tools: ['Notion', 'Claude', 'Canva'], tasks: 5
+  },
+  strategist: {
+    name: 'Strategist', role: 'Content Strategist', emoji: '🧠', tier: 3,
+    avatarClass: 'avatar-strategist', status: 'online', color: '#a855f7',
+    responsibilities: ['Living strategy docs per client', 'Content pillar definition', '30-day focus management', 'Positioning & brand voice', 'Strategy evolution from research'],
+    tools: ['Claude', 'OC Database'], tasks: 2
   },
 
 };
