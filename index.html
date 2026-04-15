@@ -2146,6 +2146,12 @@ document.addEventListener('keydown', e => {
 // Init OC on load
 updateOCStatus();
 loadOCClients();
+
+// Auto-refresh OC every 30 minutes if the tab is active
+setInterval(() => {
+  const ocView = document.getElementById('view-operating-centre');
+  if (ocView && ocView.classList.contains('active')) loadOCClients();
+}, 30 * 60 * 1000);
 setInterval(updateOCStatus, 30000);
 </script>
 </body>
