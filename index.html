@@ -880,6 +880,7 @@ body {
   <button class="nav-tab" data-view="sub-agents">Sub-Agents</button>
   <button class="nav-tab" data-view="logs">Logs</button>
   <button class="nav-tab" data-view="operating-centre">Operating Centre</button>
+  <button class="nav-tab" data-view="strategy">🧠 Strategy</button>
   <button class="nav-tab" data-view="security">Security</button>
 </nav>
 
@@ -1172,6 +1173,97 @@ body {
       </div>
     </div>
   </section>
+  <!-- ═══ STRATEGY VIEW ═══ -->
+  <section class="view" id="view-strategy">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:28px;">🧠</span>
+          <div>
+            <h2 style="font-size:22px;font-weight:800;color:#fff;margin:0;">Content Strategist</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin:0;">Living strategy docs — evolves after every research run</p>
+          </div>
+        </div>
+        <button onclick="loadStrategies()" style="padding:8px 16px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;box-shadow:0 0 20px var(--purple-glow);transition:all 0.2s;">⟳ Refresh</button>
+      </div>
+
+      <!-- Client strategy cards grid -->
+      <div id="strategy-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-bottom:24px;"></div>
+
+      <!-- Strategy detail panel -->
+      <div id="strategy-detail" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div id="sd-avatar" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏢</div>
+            <div>
+              <div id="sd-name" style="font-size:18px;font-weight:800;color:#fff;"></div>
+              <div id="sd-meta" style="font-size:12px;color:var(--text-muted);"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span id="sd-status-badge" style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;"></span>
+            <button id="sd-build-btn" onclick="buildStrategy()" style="padding:8px 16px;border-radius:8px;background:rgba(124,58,237,0.15);color:var(--purple);border:1px solid rgba(124,58,237,0.3);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;transition:all 0.2s;">⚡ Rebuild Strategy</button>
+            <button onclick="closeStrategyDetail()" style="padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:inherit;font-size:12px;">✕ Close</button>
+          </div>
+        </div>
+
+        <!-- Positioning block -->
+        <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Positioning</div>
+          <div id="sd-positioning" style="font-size:14px;color:var(--text);line-height:1.6;"></div>
+        </div>
+
+        <!-- 3-col meta row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Target Audience</div>
+            <div id="sd-audience" style="font-size:12px;color:var(--text);line-height:1.5;"></div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Brand Voice</div>
+            <div id="sd-voice" style="font-size:12px;color:var(--text);line-height:1.5;"></div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Unique Angle</div>
+            <div id="sd-angle" style="font-size:12px;color:var(--text);line-height:1.5;"></div>
+          </div>
+        </div>
+
+        <!-- 30-day focus -->
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">🎯 Current 30-Day Focus</div>
+          <div id="sd-focus" style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;"></div>
+          <div id="sd-focus-reason" style="font-size:12px;color:var(--text-muted);line-height:1.5;"></div>
+          <div id="sd-focus-expires" style="font-size:11px;color:var(--text-dim);margin-top:8px;"></div>
+        </div>
+
+        <!-- Content Pillars -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Content Pillars</div>
+          <div id="sd-pillars" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;"></div>
+        </div>
+
+        <!-- Do/Avoid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✓ Do This</div>
+            <ul id="sd-do" style="list-style:none;display:flex;flex-direction:column;gap:6px;"></ul>
+          </div>
+          <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✕ Avoid This</div>
+            <ul id="sd-avoid" style="list-style:none;display:flex;flex-direction:column;gap:6px;"></ul>
+          </div>
+        </div>
+
+        <!-- Evolution log -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Evolution Log</div>
+          <div id="sd-evolution" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="view" id="view-security">
     <div class="placeholder-view"><div class="icon">🔒</div><div class="title">Security</div><div class="desc">API keys, access control, and audit trail — coming soon</div></div>
   </section>
@@ -1695,6 +1787,218 @@ async function updateOCStatus() {
 
 // Store loaded clients for reference
 let ocClientsCache = [];
+
+// ═══════════════════════════════════════════════════
+// STRATEGY VIEW
+// ═══════════════════════════════════════════════════
+
+let currentStrategyClientId = null;
+
+async function loadStrategies() {
+  const container = document.getElementById('strategy-cards');
+  if (!container) return;
+  container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading strategies...</div>';
+  const data = await ocFetch('/api/agent/list-strategies');
+  if (!data || !data.strategies) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Could not load strategies — is OC connected?</div>';
+    return;
+  }
+  container.innerHTML = '';
+  if (data.strategies.length === 0) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted);"><div style="font-size:48px;opacity:0.3;margin-bottom:16px;">🧠</div><div style="font-size:16px;font-weight:600;">No Clients Yet</div></div>';
+    return;
+  }
+  data.strategies.forEach(s => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.2s;';
+    card.onmouseenter = () => { card.style.borderColor = 'rgba(124,58,237,0.4)'; card.style.transform = 'translateY(-2px)'; card.style.boxShadow = '0 0 20px rgba(124,58,237,0.1)'; };
+    card.onmouseleave = () => { card.style.borderColor = 'var(--border)'; card.style.transform = 'none'; card.style.boxShadow = 'none'; };
+    card.onclick = () => openStrategyDetail(s.clientId);
+
+    const statusColor = s.hasStrategy ? (s.status === 'active' ? 'var(--green)' : s.status === 'needs_review' ? 'var(--gold)' : 'var(--text-muted)') : 'var(--red)';
+    const statusLabel = s.hasStrategy ? (s.status === 'active' ? 'Active' : s.status === 'needs_review' ? 'Needs Review' : 'Draft') : 'No Strategy';
+    const statusBg = s.hasStrategy ? (s.status === 'active' ? 'rgba(34,197,94,0.1)' : s.status === 'needs_review' ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.05)') : 'rgba(239,68,68,0.1)';
+    const updatedStr = s.updatedAt ? new Date(s.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—';
+
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🏢</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#fff;">${s.clientName}</div>
+            <div style="font-size:11px;color:var(--text-muted);">Updated ${updatedStr} · ${s.evolutionCount} evolution${s.evolutionCount !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:${statusBg};color:${statusColor};border:1px solid ${statusColor}33;">${statusLabel}</span>
+      </div>
+      ${s.hasStrategy ? `
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+          <div style="font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">🎯 Current Focus</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.4;">${s.currentFocus || 'Not set'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--text-muted);">📌 ${s.pillarCount} pillar${s.pillarCount !== 1 ? 's' : ''}</span>
+          <span style="color:var(--border);">·</span>
+          <span style="font-size:11px;color:var(--text-muted);">Last by ${s.lastUpdatedBy || '—'}</span>
+        </div>
+      ` : `
+        <div style="padding:12px;border-radius:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);text-align:center;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">No strategy built yet</div>
+          <button onclick="event.stopPropagation();triggerBuildStrategy(${s.clientId})" style="padding:6px 14px;border-radius:6px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;">⚡ Build Now</button>
+        </div>
+      `}
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function openStrategyDetail(clientId) {
+  currentStrategyClientId = clientId;
+  const detail = document.getElementById('strategy-detail');
+  detail.style.display = 'block';
+  detail.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading strategy...</div>';
+  detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const data = await ocFetch('/api/agent/get-strategy', { clientId });
+  if (!data || !data.strategy) {
+    detail.innerHTML = `
+      <div style="text-align:center;padding:40px;">
+        <div style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">No strategy found for this client</div>
+        <button onclick="triggerBuildStrategy(${clientId})" style="padding:10px 20px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">⚡ Build Strategy Now</button>
+      </div>`;
+    return;
+  }
+  renderStrategyDetail(data.strategy);
+}
+
+function renderStrategyDetail(s) {
+  const detail = document.getElementById('strategy-detail');
+  // Restore original structure
+  detail.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏢</div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">${s.clientName}</div>
+          <div style="font-size:12px;color:var(--text-muted);">Updated ${s.updatedAt ? new Date(s.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'} · by ${s.lastUpdatedBy || '—'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.25);">${s.status || 'active'}</span>
+        <button onclick="triggerBuildStrategy(${s.clientId})" style="padding:8px 16px;border-radius:8px;background:rgba(124,58,237,0.15);color:var(--purple);border:1px solid rgba(124,58,237,0.3);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">⚡ Rebuild</button>
+        <button onclick="closeStrategyDetail()" style="padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:inherit;font-size:12px;">✕</button>
+      </div>
+    </div>
+
+    <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Positioning</div>
+      <div style="font-size:14px;color:var(--text);line-height:1.6;">${s.positioning || '—'}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Target Audience</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.5;">${s.targetAudience || '—'}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Brand Voice</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.5;">${s.brandVoice || '—'}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Unique Angle</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.5;">${s.uniqueAngle || '—'}</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">🎯 Current 30-Day Focus</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;">${s.currentFocus || '—'}</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">${s.currentFocusReason || ''}</div>
+      ${s.currentFocusExpiresAt ? `<div style="font-size:11px;color:var(--text-dim);margin-top:8px;">Focus expires: ${new Date(s.currentFocusExpiresAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>` : ''}
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Content Pillars</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">
+        ${(s.contentPillars || []).map((p, i) => `
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <span style="width:22px;height:22px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;">${i + 1}</span>
+              <span style="font-size:13px;font-weight:700;color:#fff;">${p.name}</span>
+            </div>
+            <div style="font-size:12px;color:var(--text);line-height:1.4;margin-bottom:6px;">${p.description}</div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;">${p.rationale}</div>
+          </div>
+        `).join('') || '<div style="color:var(--text-muted);font-size:13px;">No pillars set</div>'}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✓ Do This</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+          ${(s.doThis || []).map(item => `<li style="font-size:12px;color:var(--text);display:flex;align-items:flex-start;gap:6px;"><span style="color:var(--green);margin-top:2px;flex-shrink:0;">▸</span>${item}</li>`).join('') || '<li style="font-size:12px;color:var(--text-muted);">Nothing set</li>'}
+        </ul>
+      </div>
+      <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✕ Avoid This</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+          ${(s.avoidThis || []).map(item => `<li style="font-size:12px;color:var(--text);display:flex;align-items:flex-start;gap:6px;"><span style="color:var(--red);margin-top:2px;flex-shrink:0;">▸</span>${item}</li>`).join('') || '<li style="font-size:12px;color:var(--text-muted);">Nothing set</li>'}
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Evolution Log</div>
+      <div style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;">
+        ${[...(s.evolutionLog || [])].reverse().map(e => `
+          <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(124,58,237,0.1);color:var(--purple);font-weight:700;">${e.trigger}</span>
+              <span style="font-size:11px;color:var(--text-dim);">${e.updatedAt ? new Date(e.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : ''}</span>
+            </div>
+            <div style="font-size:12px;color:var(--text);margin-bottom:4px;">${e.summary}</div>
+            <div style="font-size:11px;color:var(--cyan);font-style:italic;">💡 ${e.keyInsight}</div>
+          </div>
+        `).join('') || '<div style="font-size:13px;color:var(--text-muted);padding:12px;">No evolution entries yet</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function closeStrategyDetail() {
+  document.getElementById('strategy-detail').style.display = 'none';
+  currentStrategyClientId = null;
+}
+
+async function triggerBuildStrategy(clientId) {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳ Building...';
+  const data = await ocFetch('/api/agent/build-strategy', { clientId });
+  if (data && data.success) {
+    await loadStrategies();
+    if (data.strategy) renderStrategyDetail(data.strategy);
+  } else {
+    btn.disabled = false;
+    btn.textContent = '⚡ Build Now';
+    alert('Failed to build strategy: ' + (data?.error || 'Unknown error'));
+  }
+}
+
+async function buildStrategy() {
+  if (!currentStrategyClientId) return;
+  await triggerBuildStrategy(currentStrategyClientId);
+}
+
+// Load strategies when tab is activated
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.view === 'strategy') loadStrategies();
+    });
+  });
+});
 
 async function loadOCClients() {
   const container = document.getElementById('oc-clients');
