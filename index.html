@@ -855,7 +855,7 @@ body {
     </div>
   </div>
   <div class="header-center">
-    <div class="stat-pill"><span class="num" id="stat-agents">5</span><span class="label">Agents</span></div>
+    <div class="stat-pill"><span class="num" id="stat-agents">6</span><span class="label">Agents</span></div>
     <div class="stat-pill"><span class="num" id="stat-tasks">24</span><span class="label">Tasks</span></div>
     <div class="stat-pill"><span class="num" id="stat-uptime">99.8%</span><span class="label">Uptime</span></div>
     <div class="stat-pill" style="cursor:pointer;" onclick="document.querySelector('[data-view=operating-centre]').click()" title="Operating Centre Status"><span id="oc-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);display:inline-block;"></span><span class="label" style="margin-left:4px;">OC</span></div>
@@ -882,7 +882,7 @@ body {
 <!-- Status Counter -->
 <div class="status-bar">
   <span class="dot"></span>
-  <span class="count" id="op-count">5</span>&nbsp;/&nbsp;5 AGENTS OPERATIONAL
+  <span class="count" id="op-count">6</span>&nbsp;/&nbsp;6 AGENTS OPERATIONAL
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1139,6 +1139,11 @@ body {
           <div class="avatar-circle avatar-nora" style="position:relative">✨<span class="status-dot online"></span></div>
           <div class="node-name">Nora</div>
           <div class="node-role">Ideas & Content</div>
+        </div>
+        <div class="org-node" onclick="showDetail('strategist')">
+          <div class="avatar-circle avatar-strategist" style="position:relative">🧠<span class="status-dot online"></span></div>
+          <div class="node-name">Strategist</div>
+          <div class="node-role">Content Strategist</div>
         </div>
 
       </div>
