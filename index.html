@@ -834,6 +834,162 @@ body {
   .detail-panel { width: 100%; right: -100%; }
   .chat-panel { width: 100%; right: -100%; }
 }
+
+/* ═══════════════════════════════════════════════════
+   CALL REVIEWS VIEW
+   ═══════════════════════════════════════════════════ */
+.call-reviews-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.call-reviews-header h2 { font-size: 22px; font-weight: 800; color: #fff; margin: 0; }
+.call-reviews-header p { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+.btn-fetch-calls {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--purple); color: #fff;
+  border: none; cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 600;
+  box-shadow: 0 0 20px var(--purple-glow);
+  transition: all 0.2s;
+}
+.btn-fetch-calls:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--purple-glow); }
+.btn-fetch-calls:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.call-reviews-list {
+  display: flex; flex-direction: column; gap: 16px;
+  max-width: 900px; margin: 0 auto;
+}
+
+.call-review-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.call-review-card:hover { border-color: var(--border-hover); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+.call-review-card-main {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.cr-score {
+  flex-shrink: 0;
+  width: 64px; height: 64px; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 900; line-height: 1;
+  border: 2px solid currentColor;
+}
+.cr-score .cr-score-denom { font-size: 11px; font-weight: 500; opacity: 0.7; margin-top: 2px; }
+.cr-score.score-red { color: var(--red); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+.cr-score.score-amber { color: var(--gold); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+.cr-score.score-green { color: var(--green); background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); }
+
+.cr-info { flex: 1; min-width: 0; }
+.cr-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.cr-attendees { font-size: 11px; color: var(--text-dim); }
+
+.cr-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.cr-rec-badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.cr-rec-badge.rec-close { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.cr-rec-badge.rec-nurture { background: rgba(245,158,11,0.15); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
+.cr-rec-badge.rec-disqualify { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.cr-expand-btn {
+  font-size: 18px; color: var(--text-muted);
+  transition: transform 0.2s; cursor: pointer;
+  background: none; border: none; padding: 0;
+}
+.cr-expand-btn.open { transform: rotate(180deg); }
+
+.call-review-detail {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 20px;
+  background: rgba(0,0,0,0.2);
+}
+.call-review-detail.open { display: block; animation: fadeIn 0.2s ease; }
+
+.cr-detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
+}
+.cr-detail-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+
+.cr-detail-block {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.cr-detail-block h5 {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+}
+.cr-detail-block ul {
+  list-style: none; display: flex; flex-direction: column; gap: 6px;
+}
+.cr-detail-block li {
+  font-size: 12px; color: var(--text); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4;
+}
+.cr-detail-block li::before { content: '▸'; color: var(--purple); font-size: 10px; flex-shrink: 0; margin-top: 2px; }
+.cr-detail-block .cr-value { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+.cr-coaching-focus {
+  background: rgba(124,58,237,0.08);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 10px; padding: 14px;
+  margin-top: 0;
+}
+.cr-coaching-focus h5 {
+  font-size: 10px; font-weight: 700; color: var(--purple);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.cr-coaching-focus p { font-size: 13px; color: var(--text); line-height: 1.5; font-style: italic; }
+
+.cr-summary-block {
+  background: rgba(6,182,212,0.05);
+  border: 1px solid rgba(6,182,212,0.15);
+  border-radius: 10px; padding: 14px;
+  margin-bottom: 16px;
+}
+.cr-summary-block h5 {
+  font-size: 10px; font-weight: 700; color: var(--cyan);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.cr-summary-block p { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+.cr-empty-state {
+  text-align: center; padding: 80px 20px;
+  color: var(--text-muted);
+}
+.cr-empty-state .icon { font-size: 52px; opacity: 0.3; margin-bottom: 16px; }
+.cr-empty-state .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.cr-empty-state .desc { font-size: 13px; color: var(--text-dim); }
+
+.cr-loading {
+  text-align: center; padding: 60px 20px;
+  color: var(--text-muted);
+}
+.cr-loading .spinner {
+  width: 32px; height: 32px; margin: 0 auto 16px;
+  border: 3px solid var(--border);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.cr-fetch-result {
+  margin-top: 20px; padding: 14px 18px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 13px; color: var(--text-muted);
+  max-width: 900px; margin-left: auto; margin-right: auto;
+  display: none;
+}
+.cr-fetch-result.show { display: block; }
 </style>
 </head>
 <body>
@@ -873,6 +1029,7 @@ body {
 <nav class="nav-bar" id="nav">
   <button class="nav-tab active" data-view="virtual-office">Virtual Office</button>
   <button class="nav-tab" data-view="daily-plan">Daily Plan</button>
+  <button class="nav-tab" data-view="call-reviews">Call Reviews</button>
   <button class="nav-tab" data-view="org-chart">Org Chart</button>
   <button class="nav-tab" data-view="agents">Agents</button>
   <button class="nav-tab" data-view="cron-jobs">Cron Jobs</button>
@@ -1281,6 +1438,34 @@ body {
 
   <section class="view" id="view-security">
     <div class="placeholder-view"><div class="icon">🔒</div><div class="title">Security</div><div class="desc">API keys, access control, and audit trail — coming soon</div></div>
+  </section>
+
+  <!-- ─── CALL REVIEWS ─── -->
+  <section class="view" id="view-call-reviews">
+    <div style="max-width:960px;margin:0 auto;">
+
+      <!-- Header -->
+      <div class="call-reviews-header">
+        <div>
+          <h2>📞 Sales Call Reviews</h2>
+          <p>AI-powered analysis of every Fathom call — automatically scored and coached</p>
+        </div>
+        <button class="btn-fetch-calls" id="btn-fetch-calls" onclick="fetchLatestCalls()">
+          ⟳ Fetch Latest
+        </button>
+      </div>
+
+      <!-- Fetch result message -->
+      <div class="cr-fetch-result" id="cr-fetch-result"></div>
+
+      <!-- Reviews list -->
+      <div class="call-reviews-list" id="call-reviews-list">
+        <div class="cr-loading">
+          <div class="spinner"></div>
+          <div>Loading call reviews...</div>
+        </div>
+      </div>
+    </div>
   </section>
 
 </main>
@@ -2153,6 +2338,224 @@ setInterval(() => {
   if (ocView && ocView.classList.contains('active')) loadOCClients();
 }, 30 * 60 * 1000);
 setInterval(updateOCStatus, 30000);
+
+// ═══════════════════════════════════════════════════
+// CALL REVIEWS
+// ═══════════════════════════════════════════════════
+
+function getScoreClass(score) {
+  if (score < 5) return 'score-red';
+  if (score <= 7) return 'score-amber';
+  return 'score-green';
+}
+
+function getRecClass(rec) {
+  const r = (rec || '').toLowerCase();
+  if (r === 'close') return 'rec-close';
+  if (r === 'disqualify') return 'rec-disqualify';
+  return 'rec-nurture';
+}
+
+function formatDuration(seconds) {
+  if (!seconds) return '';
+  const m = Math.floor(seconds / 60);
+  const h = Math.floor(m / 60);
+  if (h > 0) return `${h}h ${m % 60}m`;
+  return `${m}m`;
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return iso; }
+}
+
+function renderList(items) {
+  if (!items || items.length === 0) return '<li style="color:var(--text-dim);font-size:12px;">None noted</li>';
+  return items.map(i => `<li>${escapeHtml(i)}</li>`).join('');
+}
+
+function escapeHtml(str) {
+  if (typeof str !== 'string') return String(str || '');
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function buildReviewCard(r, index) {
+  const review = r.review || {};
+  const score = review.overall_score || 0;
+  const scoreClass = getScoreClass(score);
+  const recClass = getRecClass(review.recommendation);
+  const attendeeNames = (r.attendees || []).map(a => a.name || a.email || 'Unknown').join(', ');
+  const duration = formatDuration(r.duration_seconds);
+  const date = formatDate(r.date);
+  const detailId = `cr-detail-${index}`;
+  const btnId = `cr-btn-${index}`;
+
+  return `
+    <div class="call-review-card">
+      <div class="call-review-card-main" onclick="toggleReviewDetail('${detailId}','${btnId}')">
+        <div class="cr-score ${scoreClass}">
+          ${score}
+          <span class="cr-score-denom">/ 10</span>
+        </div>
+        <div class="cr-info">
+          <div class="cr-title">${escapeHtml(r.title || 'Sales Call')}</div>
+          <div class="cr-meta">
+            ${date}${duration ? ' &nbsp;·&nbsp; ' + duration : ''}
+            ${review.talk_listen_ratio ? ' &nbsp;·&nbsp; Talk/Listen: ' + escapeHtml(review.talk_listen_ratio) : ''}
+          </div>
+          ${attendeeNames ? `<div class="cr-attendees">👥 ${escapeHtml(attendeeNames)}</div>` : ''}
+        </div>
+        <div class="cr-badges">
+          <span class="cr-rec-badge ${recClass}">${escapeHtml(review.recommendation || 'Review')}</span>
+          <span class="cr-expand-btn" id="${btnId}">▼</span>
+        </div>
+      </div>
+
+      <div class="call-review-detail" id="${detailId}">
+        ${review.summary ? `
+          <div class="cr-summary-block">
+            <h5>📋 Summary</h5>
+            <p>${escapeHtml(review.summary)}</p>
+          </div>
+        ` : ''}
+
+        <div class="cr-detail-grid">
+          <div class="cr-detail-block">
+            <h5>✅ What Went Well</h5>
+            <ul>${renderList(review.what_went_well)}</ul>
+          </div>
+          <div class="cr-detail-block">
+            <h5>⚠️ What to Improve</h5>
+            <ul>${renderList(review.what_to_improve)}</ul>
+          </div>
+        </div>
+
+        <div class="cr-detail-grid">
+          <div class="cr-detail-block">
+            <h5>💡 Missed Opportunities</h5>
+            <ul>${renderList(review.missed_opportunities)}</ul>
+          </div>
+          <div class="cr-detail-block">
+            <h5>📈 Buying Signals</h5>
+            <ul>${renderList(review.buying_signals)}</ul>
+          </div>
+        </div>
+
+        <div class="cr-detail-grid">
+          <div class="cr-detail-block">
+            <h5>🛡️ Objections Handled</h5>
+            <ul>${renderList(review.objections_handled)}</ul>
+          </div>
+          <div class="cr-detail-block">
+            <h5>🎯 Next Steps</h5>
+            <div class="cr-value">${escapeHtml(review.next_steps_clarity || 'Not set')}</div>
+            ${r.action_items && r.action_items.length ? `
+              <ul style="margin-top:8px;">${renderList(r.action_items)}</ul>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="cr-coaching-focus">
+          <h5>🏋️ Coaching Focus</h5>
+          <p>${escapeHtml(review.coaching_focus || 'No coaching focus set')}</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleReviewDetail(detailId, btnId) {
+  const detail = document.getElementById(detailId);
+  const btn = document.getElementById(btnId);
+  if (!detail) return;
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  if (btn) btn.classList.toggle('open', !isOpen);
+}
+
+function renderCallReviews(reviews) {
+  const list = document.getElementById('call-reviews-list');
+  if (!list) return;
+
+  if (!reviews || reviews.length === 0) {
+    list.innerHTML = `
+      <div class="cr-empty-state">
+        <div class="icon">📞</div>
+        <div class="title">No call reviews yet</div>
+        <div class="desc">Reviews appear automatically after each Fathom call — or click Fetch Latest to check for new calls</div>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = reviews.map((r, i) => buildReviewCard(r, i)).join('');
+}
+
+async function loadCallReviews() {
+  const list = document.getElementById('call-reviews-list');
+  if (list) {
+    list.innerHTML = '<div class="cr-loading"><div class="spinner"></div><div>Loading call reviews...</div></div>';
+  }
+  try {
+    const res = await fetch('/api/call-reviews');
+    const reviews = await res.json();
+    renderCallReviews(reviews);
+  } catch (e) {
+    if (list) {
+      list.innerHTML = `<div class="cr-empty-state"><div class="icon">⚠️</div><div class="title">Failed to load</div><div class="desc">${e.message}</div></div>`;
+    }
+  }
+}
+
+async function fetchLatestCalls() {
+  const btn = document.getElementById('btn-fetch-calls');
+  const result = document.getElementById('cr-fetch-result');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Fetching...'; }
+  if (result) { result.className = 'cr-fetch-result'; result.textContent = ''; }
+
+  try {
+    const res = await fetch('/api/fathom/calls');
+    const data = await res.json();
+    if (res.ok) {
+      const count = (data.meetings || data.items || (Array.isArray(data) ? data : [])).length;
+      if (result) {
+        result.className = 'cr-fetch-result show';
+        result.innerHTML = `✅ Found ${count} meeting${count !== 1 ? 's' : ''} from Fathom. New calls will be reviewed automatically via webhook.`;
+      }
+    } else {
+      if (result) {
+        result.className = 'cr-fetch-result show';
+        result.innerHTML = `⚠️ ${data.error || 'Failed to fetch from Fathom'}`;
+      }
+    }
+  } catch (e) {
+    if (result) {
+      result.className = 'cr-fetch-result show';
+      result.innerHTML = `⚠️ ${e.message}`;
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '⟳ Fetch Latest'; }
+  }
+}
+
+// Load reviews when Call Reviews tab is activated
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.view === 'call-reviews') loadCallReviews();
+    });
+  });
+});
+
+// Load on page start if already on call-reviews
+if (document.getElementById('view-call-reviews') && document.getElementById('view-call-reviews').classList.contains('active')) {
+  loadCallReviews();
+}
 </script>
 </body>
 </html>
